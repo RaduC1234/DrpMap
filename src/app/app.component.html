@@ -37,7 +37,24 @@
         </div>
 
         <div class="question-card">
-            <div class="question-text">{{getCurrentQuestion().question}}</div>
+            <!-- NEW: Updated question display with ngx-highlightjs -->
+            <div class="question-text">
+                <ng-container *ngFor="let part of formatQuestionText(getCurrentQuestion().question)">
+                    <!-- Regular text/markdown content -->
+                    <div *ngIf="part.type === 'text'" [innerHTML]="part.content"></div>
+
+                    <!-- Code blocks with syntax highlighting -->
+                    <div *ngIf="part.type === 'code'" class="code-block">
+                        <div class="code-header">{{part.language?.toUpperCase() || 'CODE'}}</div>
+                        <pre><code
+                                [highlight]="part.content"
+                                [language]="part.language || 'csharp'"
+                                lineNumbers="true">
+                        </code></pre>
+                    </div>
+                </ng-container>
+            </div>
+
             <div class="answers">
                 <div
                         class="answer-option"
@@ -52,7 +69,7 @@
                             class="answer-checkbox"
                             [checked]="isAnswerSelected(answer.key)"
                             [disabled]="hasAnswered">
-                    <div class="answer-text">{{answer.key.toUpperCase()}}) {{answer.value}}</div>
+                    <div class="answer-text" [innerHTML]="formatAnswerText(answer.key, answer.value)"></div>
                 </div>
             </div>
 

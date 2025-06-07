@@ -30,13 +30,18 @@ try {
     const assetsPath = path.join(__dirname, 'src', 'assets');
     if (!fs.existsSync(assetsPath)) {
         fs.mkdirSync(assetsPath, { recursive: true });
-        console.log('✅ Created assets folder');
+        console.log('✅ Created src/assets folder');
     }
 
-    // Write JSON file
+    // Write JSON file to assets
     const jsonPath = path.join(assetsPath, 'questions.json');
     fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
     console.log(`✅ JSON file created: ${jsonPath}`);
+
+    // Also copy to public for immediate testing
+    const publicJsonPath = path.join(__dirname, 'public', 'questions.json');
+    fs.writeFileSync(publicJsonPath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON also copied to public/ for testing`);
 
     // Show sample data
     if (jsonData.length > 0) {
@@ -47,6 +52,9 @@ try {
     }
 
     console.log('\n🎉 Conversion completed successfully!');
+    console.log('📁 Files created:');
+    console.log('   - src/assets/questions.json (for production build)');
+    console.log('   - public/questions.json (for development)');
 
 } catch (error) {
     console.error('❌ Error converting Excel:', error.message);

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { HighlightModule } from 'ngx-highlightjs';
 import * as XLSX from 'xlsx';
 
 interface Question {
@@ -25,12 +26,18 @@ interface ExcelRow {
     Raspuns_corect: string;
 }
 
+interface FormattedContent {
+    type: 'text' | 'code';
+    content: string;
+    language?: string;
+}
+
 type ViewState = 'start' | 'loading' | 'quiz' | 'results';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, HighlightModule],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
@@ -71,22 +78,61 @@ export class AppComponent {
 
     private loadExcelFileOnly(): Promise<ExcelRow[]> {
         return new Promise((resolve, reject) => {
-            console.log('Loading questions from: assets/questions.json');
+            // Try both paths - assets (after conversion) and public (direct)
+            const paths = [
+                'assets/questions.json',  // After running convert-excel
+                'Questions.xlsx'          // Direct from public folder
+            ];
 
-            this.http.get('assets/questions.json')
+            this.tryJsonThenExcel(paths, 0, resolve, reject);
+        });
+    }
+
+    private tryJsonThenExcel(paths: string[], index: number, resolve: Function, reject: Function): void {
+        if (index >= paths.length) {
+            reject(new Error('No questions file found. Please run: npm run convert-excel'));
+            return;
+        }
+
+        const currentPath = paths[index];
+        console.log(`Trying path ${index + 1}/${paths.length}: ${currentPath}`);
+
+        if (currentPath.endsWith('.json')) {
+            // Try loading JSON
+            this.http.get(currentPath)
                 .subscribe({
                     next: (jsonData: any) => {
-                        console.log(`✅ JSON file loaded: ${jsonData.length} questions`);
-                        console.log('✅ First question:', jsonData[0]);
-
+                        console.log(`✅ JSON loaded from ${currentPath}: ${jsonData.length} questions`);
                         resolve(jsonData as ExcelRow[]);
                     },
-                    error: (err) => {
-                        console.error('❌ Failed to load JSON file:', err);
-                        reject(new Error(`Questions JSON file not found. Please run: npm run convert-excel`));
+                    error: () => {
+                        console.log(`❌ JSON not found at ${currentPath}, trying next...`);
+                        this.tryJsonThenExcel(paths, index + 1, resolve, reject);
                     }
                 });
-        });
+        } else {
+            // Try loading Excel
+            this.http.get(currentPath, { responseType: 'arraybuffer' })
+                .subscribe({
+                    next: (data: ArrayBuffer) => {
+                        console.log(`✅ Excel loaded from ${currentPath}: ${data.byteLength} bytes`);
+
+                        try {
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                            console.log(`✅ Extracted ${jsonData.length} rows from Excel`);
+                            resolve(jsonData as ExcelRow[]);
+                        } catch (err) {
+                            reject(new Error(`Excel parsing error: ${err}`));
+                        }
+                    },
+                    error: () => {
+                        console.log(`❌ Excel not found at ${currentPath}, trying next...`);
+                        this.tryJsonThenExcel(paths, index + 1, resolve, reject);
+                    }
+                });
+        }
     }
 
     private processQuestions(data: ExcelRow[]): Question[] {
@@ -130,6 +176,196 @@ export class AppComponent {
         this.questionsAnswered = 0;
         this.currentView = 'quiz';
         this.resetQuestion();
+    }
+
+    formatQuestionText(text: string): FormattedContent[] {
+        if (!text) return [{ type: 'text', content: '' }];
+
+        console.log('Original text:', text);
+
+        const parts: FormattedContent[] = [];
+        let currentIndex = 0;
+
+        // Enhanced regex - more careful with whitespace handling
+        const codeBlockRegex = /(`{3,})\s*(\w+)?\s*\r?\n([\s\S]*?)\r?\n\s*\1/g;
+        let match;
+
+        while ((match = codeBlockRegex.exec(text)) !== null) {
+            // Add text before code block
+            if (match.index > currentIndex) {
+                const textBefore = text.substring(currentIndex, match.index);
+                if (textBefore.trim()) {
+                    parts.push({
+                        type: 'text',
+                        content: this.processBasicMarkdown(textBefore)
+                    });
+                }
+            }
+
+            // Process the code block
+            let code = match[3]; // Don't trim here - let cleanupCodeBlock handle it
+            const language = match[2] || 'csharp';
+
+            // Clean up the code while preserving important whitespace
+            code = this.cleanupCodeBlock(code);
+
+            console.log('Found code block:', { language, code });
+
+            // Apply manual syntax highlighting if using manual approach
+            const highlightedCode = code;
+
+            parts.push({
+                type: 'code',
+                content: highlightedCode,
+                language: language.toLowerCase()
+            });
+
+            currentIndex = match.index + match[0].length;
+        }
+
+        // Add remaining text after last code block
+        if (currentIndex < text.length) {
+            const remainingText = text.substring(currentIndex);
+            if (remainingText.trim()) {
+                parts.push({
+                    type: 'text',
+                    content: this.processBasicMarkdown(remainingText)
+                });
+            }
+        }
+
+        // If no code blocks found, treat entire text as text
+        if (parts.length === 0) {
+            parts.push({
+                type: 'text',
+                content: this.processBasicMarkdown(text)
+            });
+        }
+
+        console.log('Formatted parts:', parts);
+        return parts;
+    }
+
+// Add this new method to properly clean up code blocks
+    private cleanupCodeBlock(code: string): string {
+        if (!code) return '';
+
+        console.log('Original code block:', JSON.stringify(code)); // Debug log
+
+        // Split into lines
+        let lines = code.split('\n');
+
+        console.log('Lines before cleanup:', lines); // Debug log
+
+        // Remove empty lines at start and end
+        while (lines.length > 0 && lines[0].trim() === '') {
+            lines.shift();
+        }
+        while (lines.length > 0 && lines[lines.length - 1].trim() === '') {
+            lines.pop();
+        }
+
+        if (lines.length === 0) return '';
+
+        // Find the minimum indentation (excluding empty lines)
+        const nonEmptyLines = lines.filter(line => line.trim() !== '');
+        if (nonEmptyLines.length === 0) return '';
+
+        // Calculate minimum indentation
+        const indentations = nonEmptyLines.map(line => {
+            const match = line.match(/^(\s*)/);
+            return match ? match[1].length : 0;
+        });
+
+        const minIndent = Math.min(...indentations);
+        console.log('Min indentation found:', minIndent); // Debug log
+
+        // Remove the common indentation from all lines, but preserve relative indentation
+        const normalizedLines = lines.map(line => {
+            if (line.trim() === '') {
+                return ''; // Keep empty lines empty
+            }
+
+            // Remove only the common indentation, keep the rest
+            const actualIndent = line.match(/^(\s*)/)?.[1].length || 0;
+            const newIndent = Math.max(0, actualIndent - minIndent);
+            const spaces = ' '.repeat(newIndent);
+            const content = line.substring(actualIndent);
+
+            return spaces + content;
+        });
+
+        const result = normalizedLines.join('\n');
+        console.log('Final cleaned code:', JSON.stringify(result)); // Debug log
+
+        return result;
+    }
+
+    // Simple markdown processing (much simpler than before!)
+    private processBasicMarkdown(text: string): string {
+        let processed = text;
+
+        // Headers
+        processed = processed.replace(/^### (.*$)/gm, '<h3 class="markdown-h3">$1</h3>');
+        processed = processed.replace(/^## (.*$)/gm, '<h2 class="markdown-h2">$1</h2>');
+        processed = processed.replace(/^# (.*$)/gm, '<h1 class="markdown-h1">$1</h1>');
+
+        // Bold and italic
+        processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        processed = processed.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        processed = processed.replace(/_(.*?)_/g, '<em>$1</em>');
+
+        // Links
+        processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="markdown-link">$1</a>');
+
+        // Inline code
+        processed = processed.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+        // Blockquotes
+        processed = processed.replace(/^> (.+)$/gm, '<blockquote class="markdown-blockquote">$1</blockquote>');
+
+        // Lists
+        processed = processed.replace(/^\* (.+)$/gm, '<li class="markdown-li">$1</li>');
+        processed = processed.replace(/^- (.+)$/gm, '<li class="markdown-li">$1</li>');
+        processed = processed.replace(/(<li class="markdown-li">.*<\/li>)(\s*<li class="markdown-li">.*<\/li>)*/g, (match) => {
+            return `<ul class="markdown-ul">${match}</ul>`;
+        });
+
+        // Ordered lists
+        processed = processed.replace(/^\d+\. (.+)$/gm, '<li class="markdown-ol-li">$1</li>');
+        processed = processed.replace(/(<li class="markdown-ol-li">.*<\/li>)(\s*<li class="markdown-ol-li">.*<\/li>)*/g, (match) => {
+            return `<ol class="markdown-ol">${match}</ol>`;
+        });
+
+        // Line breaks
+        processed = processed.replace(/\n\n/g, '</p><p class="markdown-p">');
+        processed = processed.replace(/\n/g, '<br>');
+
+        // Wrap in paragraph if needed
+        if (!processed.match(/^<(h[1-6]|div|ul|ol|blockquote|p)/)) {
+            processed = `<p class="markdown-p">${processed}</p>`;
+        }
+
+        return processed;
+    }
+
+    // Simple answer formatting
+    formatAnswerText(key: string, text: string): string {
+        if (!text) return '';
+
+        const fullText = `${key.toUpperCase()}) ${text}`;
+
+        // Just basic formatting for answers
+        let formatted = fullText;
+        formatted = formatted.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>');
+        formatted = formatted.replace(/\n/g, '<br>');
+
+        return formatted;
     }
 
     // Quiz functionality methods
