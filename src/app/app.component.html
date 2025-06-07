@@ -1,0 +1,109 @@
+<div class="container">
+    <div class="header">
+        <h1>🗺️ DrpMap</h1>
+        <p>Test your knowledge with our interactive quiz</p>
+    </div>
+
+    <!-- Start Screen -->
+    <div class="start-screen" *ngIf="currentView === 'start'">
+        <div class="start-content">
+            <div class="start-icon">🚀</div>
+            <h2>Ready to Begin?</h2>
+            <p>Click the button below to start your quiz journey!</p>
+            <button class="btn btn-start" (click)="startQuiz()">
+                🎯 Start Quiz
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Section -->
+    <div class="loading" *ngIf="currentView === 'loading'">
+        <div class="spinner"></div>
+        <p>Loading questions...</p>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-container" *ngIf="currentView === 'quiz'">
+        <div class="quiz-header">
+            <div class="question-counter">
+                Question {{currentQuestionIndex + 1}} of {{questions.length}}
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="getProgress()"></div>
+            </div>
+            <div class="score">
+                Score: {{score}}/{{questionsAnswered}}
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">{{getCurrentQuestion().question}}</div>
+            <div class="answers">
+                <div
+                        class="answer-option"
+                        *ngFor="let answer of getAnswerEntries()"
+                        [class.selected]="isAnswerSelected(answer.key)"
+                        [class.correct]="hasAnswered && isCorrectAnswer(answer.key)"
+                        [class.incorrect]="hasAnswered && isAnswerSelected(answer.key) && !isCorrectAnswer(answer.key)"
+                        [class.disabled]="hasAnswered"
+                        (click)="toggleAnswer(answer.key)">
+                    <input
+                            type="checkbox"
+                            class="answer-checkbox"
+                            [checked]="isAnswerSelected(answer.key)"
+                            [disabled]="hasAnswered">
+                    <div class="answer-text">{{answer.key.toUpperCase()}}) {{answer.value}}</div>
+                </div>
+            </div>
+
+            <div
+                    class="result-panel"
+                    *ngIf="hasAnswered"
+                    [class.correct]="lastAnswerCorrect"
+                    [class.incorrect]="!lastAnswerCorrect">
+                <strong>{{lastAnswerCorrect ? '✅ Correct!' : '❌ Incorrect'}}</strong>
+                <div *ngIf="!lastAnswerCorrect">
+                    The correct answer(s): {{getCorrectAnswersText()}}
+                </div>
+                <div *ngIf="lastAnswerCorrect">Well done!</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button
+                    class="btn btn-secondary"
+                    (click)="skipQuestion()"
+                    [disabled]="hasAnswered && currentQuestionIndex >= questions.length - 1">
+                ⏭️ Skip Question
+            </button>
+            <div>
+                <button
+                        class="btn btn-primary"
+                        *ngIf="!hasAnswered"
+                        (click)="submitAnswer()"
+                        [disabled]="selectedAnswers.length === 0">
+                    ✅ Submit Answer
+                </button>
+                <button
+                        class="btn btn-success"
+                        *ngIf="hasAnswered"
+                        (click)="nextQuestion()">
+                    {{currentQuestionIndex >= questions.length - 1 ? '🏁 Finish Quiz' : '➡️ Next Question'}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Results Section -->
+    <div class="final-results" *ngIf="currentView === 'results'">
+        <h2>🎉 Quiz Complete!</h2>
+        <div class="score-circle" [ngStyle]="getScoreCircleStyle()">
+            {{getScorePercentage()}}%
+        </div>
+        <h3>You scored {{score}} out of {{questions.length}}</h3>
+        <p>{{getPerformanceText()}}</p>
+        <button class="btn btn-primary" (click)="restartQuiz()">
+            🔄 Start New Quiz
+        </button>
+    </div>
+</div>
