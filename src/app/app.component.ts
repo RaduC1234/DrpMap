@@ -8,6 +8,7 @@ import { QuizService } from './services/quiz.service';
 import { TextFormatterService } from './services/text-formater.service';
 import { AnalyticsService } from './services/analytics.service';
 import { Question, QuizState, FormattedContent } from './models/quiz.models';
+import {ThemeService} from "./services/theme.service";
 
 @Component({
     selector: 'app-root',
@@ -21,12 +22,14 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'DrpMap';
 
     quizState!: QuizState;
+    isDarkTheme = false; // Add this
     private destroy$ = new Subject<void>();
 
     constructor(
         private quizService: QuizService,
         private textFormatter: TextFormatterService,
-        private analytics: AnalyticsService
+        private analytics: AnalyticsService,
+        private themeService: ThemeService
     ) {}
 
     ngOnInit(): void {
@@ -38,7 +41,20 @@ export class AppComponent implements OnInit, OnDestroy {
             .subscribe(state => {
                 this.quizState = state;
             });
+
+        // Subscribe to theme changes
+        this.themeService.isDarkTheme$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(isDark => {
+                this.isDarkTheme = isDark;
+            });
     }
+
+    // Add theme toggle method
+    toggleTheme(): void {
+        this.themeService.toggleTheme();
+    }
+
 
     ngOnDestroy(): void {
         this.destroy$.next();

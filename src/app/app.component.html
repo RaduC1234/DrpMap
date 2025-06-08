@@ -2,6 +2,9 @@
 <div class="container">
     <!-- Header with blue gradient -->
     <div class="header">
+        <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'">
+            <span class="theme-icon">{{ isDarkTheme ? '☀️' : '🌙' }}</span>
+        </button>
         <h1>🗺️ {{ title }}</h1>
         <p>Test your knowledge with our interactive quiz</p>
     </div>

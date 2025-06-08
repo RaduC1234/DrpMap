@@ -1,4 +1,3 @@
-
 /* Enhanced Code Block Styles - Light/White Theme */
 .code-block {
     margin: 20px 0;
@@ -199,6 +198,204 @@
     padding-left: 12px !important;
 }
 
+/* Inline code styling - Light theme */
+.inline-code {
+    background: #f6f8fa;
+    color: #d1242f;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code', 'Fira Code', 'SF Mono', Monaco, 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.9em;
+    border: 1px solid #d1d9e0;
+}
+
+/* =====================================================
+   DARK THEME STYLES
+   ===================================================== */
+
+/* Dark Theme Code Block */
+.dark-theme .code-block {
+    background: #1e1e1e;
+    border: 1px solid #3e3e42;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.dark-theme .code-header {
+    background: linear-gradient(135deg, #2d2d30 0%, #1e1e1e 100%);
+    color: #cccccc;
+    border-bottom: 1px solid #3e3e42;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+}
+
+/* Dark Theme Pre and Code Elements */
+.dark-theme .code-block pre {
+    background: #1e1e1e !important;
+    color: #d4d4d4 !important;
+}
+
+.dark-theme .code-block code {
+    color: #d4d4d4 !important;
+}
+
+/* Dark Theme Syntax Highlighting - VS Code Dark Theme Colors */
+.dark-theme .code-block .hljs,
+.dark-theme .code-block code.hljs {
+    background: #1e1e1e !important;
+    color: #d4d4d4 !important;
+}
+
+.dark-theme .code-block .hljs-keyword,
+.dark-theme .code-block code .hljs-keyword {
+    color: #569cd6 !important; /* Blue for keywords: var, new, public, etc. */
+    font-weight: normal !important;
+}
+
+.dark-theme .code-block .hljs-string,
+.dark-theme .code-block code .hljs-string {
+    color: #ce9178 !important; /* Orange for strings */
+}
+
+.dark-theme .code-block .hljs-comment,
+.dark-theme .code-block code .hljs-comment {
+    color: #6a9955 !important; /* Green for comments */
+    font-style: italic !important;
+}
+
+.dark-theme .code-block .hljs-number,
+.dark-theme .code-block code .hljs-number {
+    color: #b5cea8 !important; /* Light green for numbers */
+}
+
+.dark-theme .code-block .hljs-class,
+.dark-theme .code-block .hljs-title,
+.dark-theme .code-block .hljs-type,
+.dark-theme .code-block code .hljs-class,
+.dark-theme .code-block code .hljs-title,
+.dark-theme .code-block code .hljs-type {
+    color: #4ec9b0 !important; /* Cyan for types: List, int, string */
+}
+
+.dark-theme .code-block .hljs-function,
+.dark-theme .code-block code .hljs-function {
+    color: #dcdcaa !important; /* Yellow for function names */
+}
+
+.dark-theme .code-block .hljs-literal,
+.dark-theme .code-block code .hljs-literal {
+    color: #569cd6 !important; /* Blue for true/false/null */
+}
+
+.dark-theme .code-block .hljs-built_in,
+.dark-theme .code-block code .hljs-built_in {
+    color: #4ec9b0 !important; /* Cyan for built-in types */
+}
+
+.dark-theme .code-block .hljs-variable,
+.dark-theme .code-block code .hljs-variable {
+    color: #9cdcfe !important; /* Light blue for variables */
+}
+
+.dark-theme .code-block .hljs-meta,
+.dark-theme .code-block code .hljs-meta {
+    color: #c586c0 !important; /* Pink for attributes/decorators */
+}
+
+.dark-theme .code-block .hljs-attr,
+.dark-theme .code-block .hljs-property,
+.dark-theme .code-block code .hljs-attr,
+.dark-theme .code-block code .hljs-property {
+    color: #92c5f8 !important; /* Light blue for properties */
+}
+
+.dark-theme .code-block .hljs-doctag,
+.dark-theme .code-block code .hljs-doctag {
+    color: #6a9955 !important; /* Green for doc comments */
+}
+
+.dark-theme .code-block .hljs-symbol,
+.dark-theme .code-block code .hljs-symbol {
+    color: #4ec9b0 !important; /* Cyan for interfaces */
+}
+
+.dark-theme .code-block .hljs-punctuation,
+.dark-theme .code-block code .hljs-punctuation {
+    color: #d4d4d4 !important; /* Default text color for punctuation */
+}
+
+/* Dark Theme Custom Scrollbar */
+.dark-theme .code-block pre::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.dark-theme .code-block pre::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 5px;
+}
+
+.dark-theme .code-block pre::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 5px;
+    border: 1px solid #1e1e1e;
+}
+
+.dark-theme .code-block pre::-webkit-scrollbar-thumb:hover {
+    background: #4e4e4e;
+}
+
+/* Dark Theme Line Numbers */
+.dark-theme .hljs-ln-numbers {
+    color: #858585 !important;
+    border-right: 1px solid #3e3e42 !important;
+    background: #1e1e1e !important;
+}
+
+/* Dark Theme Inline Code */
+.dark-theme .inline-code {
+    background: #2d2d30;
+    color: #ce9178;
+    border: 1px solid #3e3e42;
+}
+
+/* Dark Theme Text Content */
+.dark-theme .text-content {
+    color: #e5e7eb;
+}
+
+.dark-theme .text-content h1,
+.dark-theme .text-content h2,
+.dark-theme .text-content h3 {
+    color: #f9fafb;
+}
+
+.dark-theme .text-content strong {
+    color: #f9fafb;
+}
+
+.dark-theme .text-content em {
+    color: #d1d5db;
+}
+
+.dark-theme .text-content code {
+    background: #374151;
+    color: #fbbf24;
+    border: 1px solid #4b5563;
+}
+
+.dark-theme .text-content blockquote {
+    background: #374151;
+    border-left: 4px solid #60a5fa;
+    color: #d1d5db;
+}
+
+.dark-theme .text-content a {
+    color: #60a5fa;
+}
+
+.dark-theme .text-content a:hover {
+    color: #93c5fd;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .code-block pre {
@@ -227,15 +424,4 @@
         font-size: 12px !important;
         padding: 14px !important;
     }
-}
-
-/* Inline code styling - Light theme */
-.inline-code {
-    background: #f6f8fa;
-    color: #d1242f;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Cascadia Code', 'Fira Code', 'SF Mono', Monaco, 'Roboto Mono', Consolas, 'Courier New', monospace;
-    font-size: 0.9em;
-    border: 1px solid #d1d9e0;
 }
