@@ -1,126 +1,127 @@
+<!-- Fixed HTML template to match the original working design -->
 <div class="container">
+    <!-- Header with blue gradient -->
     <div class="header">
-        <h1>🗺️ DrpMap</h1>
+        <h1>🗺️ {{ title }}</h1>
         <p>Test your knowledge with our interactive quiz</p>
     </div>
 
     <!-- Start Screen -->
-    <div class="start-screen" *ngIf="currentView === 'start'">
+    <div class="start-screen" *ngIf="quizState.currentView === 'start'">
         <div class="start-content">
             <div class="start-icon">🚀</div>
-            <h2>Ready to Begin?</h2>
-            <p>Click the button below to start your quiz journey!</p>
-            <button class="btn btn-start" (click)="startQuiz()">
-                🎯 Start Quiz
-            </button>
+            <h2>Welcome to the Quiz App</h2>
+            <p>Test your knowledge with randomized questions!</p>
+            <button class="btn btn-start" (click)="startQuiz()">🚀 Start Quiz</button>
         </div>
     </div>
 
-    <!-- Loading Section -->
-    <div class="loading" *ngIf="currentView === 'loading'">
+    <!-- Loading Screen -->
+    <div class="loading" *ngIf="quizState.currentView === 'loading'">
         <div class="spinner"></div>
         <p>Loading questions...</p>
     </div>
 
-    <!-- Quiz Section -->
-    <div class="quiz-container" *ngIf="currentView === 'quiz'">
+    <!-- Quiz Screen -->
+    <div class="quiz-container" *ngIf="quizState.currentView === 'quiz'">
+        <!-- Quiz Header -->
         <div class="quiz-header">
             <div class="question-counter">
-                Question {{currentQuestionIndex + 1}} of {{questions.length}}
+                Question {{quizState.questionsAnswered + 1}} of 37
+                <small>({{quizState.allQuestions.length}} total available)</small>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" [style.width.%]="getProgress()"></div>
             </div>
-            <div class="score">
-                Score: {{score}}/{{questionsAnswered}}
+            <div class="score-display">
+                Score: {{quizState.score}}/{{quizState.questionsAnswered}}
             </div>
         </div>
 
-        <div class="question-card">
-            <!-- NEW: Updated question display with ngx-highlightjs -->
+        <!-- Question Card -->
+        <div class="question-card" *ngIf="quizState.currentQuestion">
             <div class="question-text">
                 <ng-container *ngFor="let part of formatQuestionText(getCurrentQuestion().question)">
-                    <!-- Regular text/markdown content -->
-                    <div *ngIf="part.type === 'text'" [innerHTML]="part.content"></div>
-
-                    <!-- Code blocks with syntax highlighting -->
+                    <div *ngIf="part.type === 'text'" [innerHTML]="part.content" class="text-content"></div>
                     <div *ngIf="part.type === 'code'" class="code-block">
-                        <div class="code-header">{{part.language?.toUpperCase() || 'CODE'}}</div>
-                        <pre><code
-                                [highlight]="part.content"
-                                [language]="part.language || 'csharp'"
-                                lineNumbers="true">
-                        </code></pre>
+                        <div class="code-header">{{ part.language?.toUpperCase() || 'CODE' }}</div>
+                        <pre><code [highlight]="part.content" [language]="part.language || 'csharp'"></code></pre>
                     </div>
                 </ng-container>
             </div>
 
+            <!-- Answers -->
             <div class="answers">
-                <div
-                        class="answer-option"
-                        *ngFor="let answer of getAnswerEntries()"
-                        [class.selected]="isAnswerSelected(answer.key)"
-                        [class.correct]="hasAnswered && isCorrectAnswer(answer.key)"
-                        [class.incorrect]="hasAnswered && isAnswerSelected(answer.key) && !isCorrectAnswer(answer.key)"
-                        [class.disabled]="hasAnswered"
-                        (click)="toggleAnswer(answer.key)">
-                    <input
-                            type="checkbox"
-                            class="answer-checkbox"
-                            [checked]="isAnswerSelected(answer.key)"
-                            [disabled]="hasAnswered">
+                <div class="answer-option"
+                     *ngFor="let answer of getAnswerEntries()"
+                     [class.selected]="isAnswerSelected(answer.key)"
+                     [class.correct]="quizState.hasAnswered && isCorrectAnswer(answer.key)"
+                     [class.incorrect]="quizState.hasAnswered && isAnswerSelected(answer.key) && !isCorrectAnswer(answer.key)"
+                     [class.disabled]="quizState.hasAnswered"
+                     (click)="toggleAnswer(answer.key)">
+
+                    <input type="checkbox"
+                           class="answer-checkbox"
+                           [checked]="isAnswerSelected(answer.key)"
+                           [disabled]="quizState.hasAnswered">
+
                     <div class="answer-text" [innerHTML]="formatAnswerText(answer.key, answer.value)"></div>
                 </div>
             </div>
 
-            <div
-                    class="result-panel"
-                    *ngIf="hasAnswered"
-                    [class.correct]="lastAnswerCorrect"
-                    [class.incorrect]="!lastAnswerCorrect">
-                <strong>{{lastAnswerCorrect ? '✅ Correct!' : '❌ Incorrect'}}</strong>
-                <div *ngIf="!lastAnswerCorrect">
-                    The correct answer(s): {{getCorrectAnswersText()}}
+            <!-- Result Panel -->
+            <div class="result-panel"
+                 *ngIf="quizState.hasAnswered"
+                 [class.correct]="quizState.lastAnswerCorrect"
+                 [class.incorrect]="!quizState.lastAnswerCorrect">
+                <strong>{{quizState.lastAnswerCorrect ? '✅ Correct!' : '❌ Incorrect'}}</strong>
+                <div *ngIf="!quizState.lastAnswerCorrect">
+                    Correct answer(s): {{getCorrectAnswersText()}}
                 </div>
-                <div *ngIf="lastAnswerCorrect">Well done!</div>
+                <div *ngIf="quizState.lastAnswerCorrect">Well done!</div>
             </div>
-        </div>
 
-        <div class="controls">
-            <button
-                    class="btn btn-secondary"
-                    (click)="skipQuestion()"
-                    [disabled]="hasAnswered && currentQuestionIndex >= questions.length - 1">
-                ⏭️ Skip Question
-            </button>
-            <div>
-                <button
-                        class="btn btn-primary"
-                        *ngIf="!hasAnswered"
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-secondary"
+                        (click)="skipQuestion()"
+                        [disabled]="quizState.hasAnswered && quizState.questionsAnswered >= 37">
+                    ⏭️ Skip Question
+                </button>
+
+                <button class="btn btn-success"
+                        *ngIf="!quizState.hasAnswered"
                         (click)="submitAnswer()"
-                        [disabled]="selectedAnswers.length === 0">
+                        [disabled]="quizState.selectedAnswers.length === 0">
                     ✅ Submit Answer
                 </button>
-                <button
-                        class="btn btn-success"
-                        *ngIf="hasAnswered"
+
+                <button class="btn btn-primary"
+                        *ngIf="quizState.hasAnswered"
                         (click)="nextQuestion()">
-                    {{currentQuestionIndex >= questions.length - 1 ? '🏁 Finish Quiz' : '➡️ Next Question'}}
+                    {{quizState.questionsAnswered >= 37 ? '🏁 Finish Quiz' : '➡️ Next Question'}}
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Final Results Section -->
-    <div class="final-results" *ngIf="currentView === 'results'">
-        <h2>🎉 Quiz Complete!</h2>
+    <!-- Results Screen -->
+    <div class="final-results" *ngIf="quizState.currentView === 'results'">
+        <h2>🎉 Quiz Completed!</h2>
         <div class="score-circle" [ngStyle]="getScoreCircleStyle()">
-            {{getScorePercentage()}}%
+            <span class="score-percentage">{{getScorePercentage()}}%</span>
         </div>
-        <h3>You scored {{score}} out of {{questions.length}}</h3>
-        <p>{{getPerformanceText()}}</p>
-        <button class="btn btn-primary" (click)="restartQuiz()">
-            🔄 Start New Quiz
+        <h3>You scored {{quizState.score}} out of {{quizState.questionsAnswered}}</h3>
+        <p class="performance-text">{{getPerformanceText()}}</p>
+
+        <div class="stats">
+            📊 Questions answered: {{quizState.questionsAnswered}} out of 37<br>
+            📚 Questions available in database: {{quizState.allQuestions.length}}<br>
+            🎯 Accuracy: {{getScorePercentage()}}%
+        </div>
+
+        <button class="btn btn-start" (click)="restartQuiz()">
+            🔄 Take Another Quiz
         </button>
     </div>
 </div>

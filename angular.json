@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "DrpMap": {
+    "drp-map": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -43,12 +43,29 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "local": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -57,10 +74,13 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "DrpMap:build:production"
+              "buildTarget": "drp-map:build:production"
             },
             "development": {
-              "buildTarget": "DrpMap:build:development"
+              "buildTarget": "drp-map:build:development"
+            },
+            "local": {
+              "buildTarget": "drp-map:build:local"
             }
           },
           "defaultConfiguration": "development"
