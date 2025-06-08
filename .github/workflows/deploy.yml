@@ -49,7 +49,7 @@ jobs:
           sed -i "s/production: false/production: true/g" src/environments/environment.prod.ts
 
       - name: Build Angular app
-        run: ng build --configuration production --base-href="/DrpMap/"
+        run: npm run build:prod
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
