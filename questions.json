@@ -1563,8 +1563,6 @@
     "b": "Deprecate",
     "c": "Obsolete",
     "d": "DontUseThis",
-    "e": "Old",
-    "f": "PlsDontUse",
     "Raspuns_corect": "['c']"
   },
   {
@@ -1743,6 +1741,14 @@
     "c": "sunt tipuri referinta",
     "d": "exceptiile suporta polimorfie de mostenire",
     "Raspuns_corect": "['a','b','c','d']"
+  },
+  {
+    "Intrebare": "Ce se poate scrie in loc de <AAA> si <BBB> pentru a nu avea erori sau avertismente la compilare, iar la rulare sa se afiseze: A.F(), B.F()? ```csharp class A {\r\n    <AAA> void F() {\r\n        Console.WriteLine(\"A.F()\");\r\n    }\r\n}\r\n\r\nclass B : A {\r\n    <BBB> void F() {\r\n        Console.WriteLine(\"B.F()\");\r\n    }\r\n} ```",
+    "a": "virtual, override",
+    "b": "virtual, new",
+    "c": "nimic, nimic",
+    "d": "nimic, sealed",
+    "Raspuns_corect": "['a']"
   },
   {
     "Intrebare": "Daca se considera codul: ```csharp class X { public X(){} private int a; } La instructiunea X x = new X(); ``` unde se va aloca campul a?",
@@ -3579,17 +3585,5 @@
     "g": "Poate fi combinat cu `static`",
     "h": "O clasă `sealed` poate implementa interfețe",
     "Raspuns_corect": "['a', 'c', 'd', 'e', 'f', 'h']"
-  },
-  {
-    "Intrebare": "Ce se poate scrie în loc de <AAA> și <BBB> pentru a nu avea erori sau avertismente la compilare, iar la rulare să se afișeze:\r\n\r\nA.F()\r\nB.F()\r\n\r\n```csharp\r\nclass A {\r\n    <AAA> void F() {\r\n        Console.WriteLine(\"A.F()\");\r\n    }\r\n}\r\n\r\nclass B : A {\r\n    <BBB> void F() {\r\n        Console.WriteLine(\"B.F()\");\r\n    }\r\n}\r\n```",
-    "a": "<AAA> = virtual, <BBB> = override",
-    "b": "<AAA> = abstract, <BBB> = override",
-    "c": "<AAA> = static, <BBB> = static",
-    "d": "<AAA> = , <BBB> = new",
-    "e": "<AAA> = virtual, <BBB> = new",
-    "f": "<AAA> = , <BBB> = override",
-    "g": "<AAA> = sealed, <BBB> = override",
-    "h": "<AAA> = new, <BBB> = override",
-    "Raspuns_corect": "['d']"
   }
 ]
