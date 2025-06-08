@@ -136,7 +136,7 @@
     "Raspuns_corect": "['a', 'c', 'd']"
   },
   {
-    "Intrebare": "Care dintre următoarele afirmații despre **Threading** în C# cu ClsZQG, .NET 8 sunt corecte?",
+    "Intrebare": "Care dintre următoarele afirmații despre **Threading** în C# cu ClsZQG, .NET 8 sunt corecte? ```csharp\r\npublic class ClsZQG\r\n{\r\n    public void StartThreads()\r\n    {\r\n        for (int i = 0; i < 8; i++)\r\n        {\r\n            Thread t = new Thread(() =>\r\n            {\r\n                Console.WriteLine($\"Thread {Thread.CurrentThread.ManagedThreadId} în execuție.\");\r\n            });\r\n            t.Start();\r\n        }\r\n    }\r\n} ```",
     "a": "ClsZQG permite crearea a maximum 8 thread-uri simultan.",
     "b": "Thread-urile din ClsZQG rulează pe aceleași nuclee fizice fără optimizări.",
     "c": "Task Parallel Library optimizează utilizarea thread-urilor în ClsZQG.",
@@ -190,14 +190,6 @@
     "c": "LINQ poate fi utilizat pentru a interoga XML și JSON.",
     "d": "LINQ suportă programarea paralelă cu PLINQ.",
     "Raspuns_corect": "['a', 'c', 'd']"
-  },
-  {
-    "Intrebare": "Alege variantele care NU sunt recomandate!\r\n```csharp\r\npublic delegate void MyEventHandler(object sender, EventArgs e);\r\npublic event MyEventHandler MyEvent;\r\npublic void TriggerEvent()\r\n{\r\nMyEvent?.Invoke(this, EventArgs.Empty);\r\n}\r\n```",
-    "a": "Abonarea la eveniment fără a verifica existența unui handler.",
-    "b": "Folosirea delegate-ului înainte de a-l inițializa.",
-    "c": "Anularea abonării la eveniment în interiorul handler-ului.",
-    "d": "Crearea de evenimente fără a specifica accesibilitatea.",
-    "Raspuns_corect": "['a', 'b', 'c', 'd']"
   },
   {
     "Intrebare": "Ce clasă este folosită pentru a crea un fir de execuție în C#?",
@@ -296,7 +288,7 @@
     "Raspuns_corect": "['c']"
   },
   {
-    "Intrebare": "Care dintre următoarele afirmații despre clasele și obiectele din C# sunt corecte?\r\n```csharp\r\n// cod (opțional)\r\na) O clasă în C# poate conține atât membri de date, cât și metode.\r\nb) Obiectele nu pot fi instantiate din clase abstracte.\r\nc) Clasele pot moșteni de la mai multe clase în C#.\r\nd) Un obiect este o instanță a unei clase definite în C#.\r\n```",
+    "Intrebare": "Care dintre următoarele afirmații despre clasele și obiectele din C# sunt corecte?",
     "a": "O clasă în C# poate conține atât membri de date, cât și metode.",
     "b": "Obiectele nu pot fi instantiate din clase abstracte.",
     "c": "Clasele pot moșteni de la mai multe clase în C#.",
@@ -544,14 +536,6 @@
     "Raspuns_corect": "['b']"
   },
   {
-    "Intrebare": "Analizează variantele care NU sunt recomandate în structuri C#.\r\n```csharp\r\nstruct ClsCOV\r\n{\r\npublic int value;\r\npublic ClsCOV(int v) { value = v; }\r\n}\r\n```",
-    "a": "Instanțierea directă a structurilor poate duce la modificări necontrolate.",
-    "b": "Structurile sunt tipuri de referință, iar mutabilitatea lor trebuie evitată.",
-    "c": "Transmiterea structurilor prin valoare este ineficientă pentru date mari.",
-    "d": "Structurile nu pot avea constructori personalizați fără parametru.",
-    "Raspuns_corect": "['a', 'b']"
-  },
-  {
     "Intrebare": "Ce metodă este folosită pentru serializarea unui obiect în C#?",
     "a": "SerializeObject()",
     "b": "JsonConvert.Serialize()",
@@ -562,7 +546,7 @@
   {
     "Intrebare": "Identifică problemele reale în ClsLFB din C# .NET 8.\r\n```csharp\r\npublic class ClsLFB\r\n{\r\npublic int Value { get; set; }\r\npublic string Process()\r\n{\r\nreturn Value.ToString();\r\n}\r\n}\r\n```",
     "a": "Clasa nu are un constructor explicit.",
-    "b": "Proprieta `Value` nu ar trebui să fie publică.",
+    "b": "Proprietea `Value` nu ar trebui să fie publică.",
     "c": "Metoda `Process` nu gestionează excepțiile.",
     "d": "Nu există metode de validare pentru `Value`.",
     "Raspuns_corect": "['a', 'b']"
@@ -640,7 +624,7 @@
     "Raspuns_corect": "['a', 'b', 'd']"
   },
   {
-    "Intrebare": "Care sunt avantajele utilizării structurilor în C# în versiunea .NET 7?\r\n```csharp\r\n// structura ClsRZN\r\nstruct ClsRZN\r\n{\r\npublic int ID;\r\npublic string Nume;\r\n}\r\na) Structurile sunt tipuri de valoare, economisind memorie.\r\nb) Structurile permit moștenirea, facilitând reutilizarea codului.\r\nc) Structurile sunt mai rapide în alocare și dezalocare decât clasele.\r\nd) Structurile sunt recomandate pentru date imutabile și fără referință.\r\nRăspuns corect: a, c",
+    "Intrebare": "Care sunt avantajele utilizării structurilor în C# în versiunea .NET 7?\r\n```csharp\r\n// structura ClsRZN\r\nstruct ClsRZN\r\n{\r\n    public int ID;\r\n    public string Nume;\r\n}```",
     "a": "Structurile sunt tipuri de valoare, economisind memorie.",
     "b": "Structurile permit moștenirea, facilitând reutilizarea codului.",
     "c": "Structurile sunt mai rapide în alocare și dezalocare decât clasele.",
@@ -686,14 +670,6 @@
     "c": "Nu se pot crea instanțe ale unei clase generice fără a specifica tipul.",
     "d": "Generics nu pot fi utilizate cu structuri (struct).",
     "Raspuns_corect": "['a', 'b']"
-  },
-  {
-    "Intrebare": "Identifică variantele care NU sunt recomandate! Sprint retrospective: identifică problemele reale din fragmentul discutat. (Topic: **Excepții**) în C#.\r\n```csharp\r\ntry\r\n{\r\n// cod care poate genera o excepție\r\n}\r\ncatch (Exception ex)\r\n{\r\nConsole.WriteLine(\"A apărut o excepție: \" + ex.Message);\r\n}\r\n```",
-    "a": "Capturarea generală a excepțiilor fără a le trata corespunzător.",
-    "b": "Folosirea exception handler fără a loga excepția.",
-    "c": "Rethrowing excepțiile fără a le ajusta mesajul.",
-    "d": "Ignorarea excepțiilor prin utilizarea unui bloc `try` gol.",
-    "Raspuns_corect": "['a', 'b', 'd']"
   },
   {
     "Intrebare": "Evaluează afirmațiile adevărate despre LINQ în C#.",
@@ -1670,12 +1646,16 @@
     "Raspuns_corect": "['b']"
   },
   {
-    "Intrebare": "Pentru metoda f definita in clasa MyClass... ce valori vor avea a, b, c dupa apel?",
-    "a": "a=0, b=1, c=2",
-    "b": "a=0, b=0, c=0",
-    "c": "a=1, b=1, c=2",
+    "Intrebare": "Pentru metoda `f` definită în clasa `MyClass`:\r\n```csharp\r\nclass MyClass\r\n{\r\n    public void f(int a, ref int b, out int c)\r\n    {\r\n        a = 0;\r\n        b = 1;\r\n        c = 2;\r\n    }\r\n}\r\n\r\nclass Program\r\n{\r\n    static void Main()\r\n    {\r\n        int a = 1, b = 2, c;\r\n        MyClass obj = new MyClass();\r\n        obj.f(a, ref b, out c);\r\n        // Ce valori vor avea a, b, c aici?\r\n    }\r\n}\r\n```",
+    "a": "a = 0, b = 1, c = 2",
+    "b": "a = 0, b = 0, c = 0",
+    "c": "a = 1, b = 1, c = 2",
     "d": "Eroare la compilare",
-    "Raspuns_corect": "['a']"
+    "e": "a = 0, b = 2, c = 2",
+    "f": "a = 1, b = 2, c = 2",
+    "g": "b = 1, c = 2, a = 0",
+    "h": "a = 1, b = 1, c = 2",
+    "Raspuns_corect": "['c']"
   },
   {
     "Intrebare": "In expresia System.Configuration.ConfigurationManager.AppSettings[\"ceva\"], ce anume se foloseste?",
@@ -2566,7 +2546,7 @@
     "Raspuns_corect": "['b']"
   },
   {
-    "Intrebare": "Ce este: ```csharp Using c = System.Console;```",
+    "Intrebare": "Ce este:\r\n```csharp\r\nusing c = System.Console;     ```",
     "a": "eroare la compilare",
     "b": "eroare la rulare",
     "c": "instructiune using",
@@ -3121,14 +3101,6 @@
     "Raspuns_corect": "['a','b']"
   },
   {
-    "Intrebare": "```csharp List<string> list = new List<string>{\"a\",\"b\",\"c\"} ```este valid din:",
-    "a": "C# 2.0",
-    "b": "C# 2.5",
-    "c": "C# 3.0",
-    "d": "C# 4.0",
-    "Raspuns_corect": "['c']"
-  },
-  {
     "Intrebare": "Despre conexiunile DB:",
     "a": "Pot fi închise cu Close()",
     "b": "Pot fi eliminate cu Dispose()",
@@ -3167,5 +3139,451 @@
     "c": "Command",
     "d": "CommandBuilder",
     "Raspuns_corect": "['a','b','c','d']"
+  },
+  {
+    "Intrebare": "Ce cuvant poate aparea dupa 'yield'?",
+    "a": "class",
+    "b": "break",
+    "c": "throw",
+    "d": "pause",
+    "e": "nu exista cuvantul 'yield' in C#",
+    "f": "return",
+    "g": "static",
+    "h": "niciuna dintre variante",
+    "Raspuns_corect": "['b','f']"
+  },
+  {
+    "Intrebare": "Despre tipurile interfata",
+    "a": "Nu pot condine declaratie de evenimente",
+    "b": "Pot contine declaratie de constructor",
+    "c": "Pot contine evenimente",
+    "d": "Pot contine declaratii de proprietati",
+    "e": "Pot contine declaratii de metode",
+    "Raspuns_corect": "['c','d','e']"
+  },
+  {
+    "Intrebare": "Despre clasele statice:",
+    "a": "Permit declararea de constuctori instanta privati",
+    "b": "Pot contine campuri marcate cu 'const'",
+    "c": "Pot contine campuri calificate 'static readonly'",
+    "d": "Pot contine destructor",
+    "e": "Niciuna dintre variante",
+    "f": "Nu pot contine proprietati instantiate",
+    "Raspuns_corect": "['b', 'c', 'f']"
+  },
+  {
+    "Intrebare": "Metadatele sunt:",
+    "a": "stocate impreuna cu codul pe care il descriu",
+    "b": "date care stocheaza informatii doar despre numele claselor",
+    "c": "date care permit reflectia",
+    "d": "date care contin declaratii despre cultura aplicatiei respective",
+    "Raspuns_corect": "['a', 'c', 'd']"
+  },
+  {
+    "Intrebare": "Tipul 'bool':",
+    "a": "Este folosit pentru reprezentarea valorilor de adevar 'Adevarat' si 'Fals'",
+    "b": "Are conversii implicite intre acesta si 'int'",
+    "c": "Are conversii implicite intre acesta si 'short'",
+    "d": "Are conversii implicite intre acesta si toate datele primite din c#",
+    "e": "Niciuna dintre variante",
+    "f": "Se reprezinta pe un octet",
+    "g": "Se reprezinta pe 2 octeti din cauza padding-ului",
+    "Raspuns_corect": "['a','f']"
+  },
+  {
+    "Intrebare": "Modificatorul de delegat poate fi:",
+    "a": "new'",
+    "b": "public'",
+    "c": "protected'",
+    "d": "internal'",
+    "e": "protected internal'",
+    "f": "private protected'",
+    "g": "private'",
+    "h": "static'",
+    "Raspuns_corect": "['a','b','c','d','e','f','g']"
+  },
+  {
+    "Intrebare": "Care dintre următoarele clase implementează interfața `IDictionary`?",
+    "a": "ArrayList",
+    "b": "Queue",
+    "c": "Hashtable",
+    "d": "BitArray",
+    "e": "SortedList",
+    "f": "Stack",
+    "g": "ReadOnlyCollectionBase",
+    "h": "CollectionBase",
+    "Raspuns_corect": "['c','e']"
+  },
+  {
+    "Intrebare": "Ce metode sunt definite de interfața `IList`?",
+    "a": "Add",
+    "b": "Remove",
+    "c": "Contains",
+    "d": "GetEnumerator",
+    "e": "Insert",
+    "f": "CopyTo",
+    "g": "RemoveAt",
+    "h": "Clear",
+    "Raspuns_corect": "['a','b','c','e','g','h']"
+  },
+  {
+    "Intrebare": "Care dintre următoarele afirmații despre obiectele de tip `ArrayList` sunt adevărate?",
+    "a": "Pot conține doar elemente de același tip",
+    "b": "Cresc automat când se adaugă elemente",
+    "c": "Necesită dimensiune fixă definită la inițializare",
+    "d": "Implementarea implică interfața `IEnumerable`",
+    "e": "Accesarea elementelor se face prin index",
+    "f": "Sunt sincronizate automat pentru acces multi-thread",
+    "g": "Necesită conversie explicită pentru extragerea unui obiect de un anumit tip",
+    "h": "Se golesc prin metoda `Clear`",
+    "Raspuns_corect": "['b','d','e','g','h']"
+  },
+  {
+    "Intrebare": "Ce se întâmplă când o variabilă de tip valoare este convertită într-un `object`?\r\n```csharp\r\nint x = 42;\r\nobject o = x;\r\n```",
+    "a": "Se produce unboxing",
+    "b": "Variabila este copiată pe heap",
+    "c": "Referința `o` indică spre stivă",
+    "d": "Se produce boxing",
+    "e": "Nu este permisă această conversie",
+    "f": "Tipul obiectului devine `int`",
+    "g": "Se aruncă o excepție",
+    "h": "Se creează o instanță de tip `object` care conține valoarea",
+    "Raspuns_corect": "['b', 'd', 'h']"
+  },
+  {
+    "Intrebare": "Ce rol are interfața `IDisposable` în C#?",
+    "a": "Permite definirea de evenimente",
+    "b": "Este utilizată pentru a elibera resurse neadministrate",
+    "c": "Este necesară pentru toate clasele ce conțin câmpuri `readonly`",
+    "d": "Este cerută de clasele care lucrează cu fișiere",
+    "e": "Este implementată de `SqlConnection` și `Stream`",
+    "f": "Se folosește în blocurile `using`",
+    "g": "Este impusă în clasele abstracte",
+    "h": "Oferă suport pentru polimorfism",
+    "Raspuns_corect": "['b', 'd', 'e', 'f']"
+  },
+  {
+    "Intrebare": "Ce metode LINQ pot transforma o colecție într-o altă structură?",
+    "a": "Select",
+    "b": "Where",
+    "c": "SelectMany",
+    "d": "GroupBy",
+    "e": "OrderBy",
+    "f": "Join",
+    "g": "Take",
+    "h": "Skip",
+    "Raspuns_corect": "['a', 'c', 'd', 'f']"
+  },
+  {
+    "Intrebare": "Ce tipuri pot fi utilizate cu constrângerea `where T : struct`?",
+    "a": "int",
+    "b": "string",
+    "c": "DateTime",
+    "d": "object",
+    "e": "Nullable<int>",
+    "f": "enum",
+    "g": "decimal",
+    "h": "Tuple<int, string>",
+    "Raspuns_corect": "['a', 'c', 'f', 'g']"
+  },
+  {
+    "Intrebare": "Ce se întâmplă în C# dacă încerci să accesezi o cheie inexistentă într-un `Dictionary<TKey, TValue>`?\r\n```csharp\r\nvar dict = new Dictionary<string, int>();\r\nint value = dict[\"abc\"];\r\n```",
+    "a": "Se returnează `null`",
+    "b": "Se returnează `0`",
+    "c": "Se aruncă o excepție",
+    "d": "Se adaugă automat cheia",
+    "e": "Se returnează valoarea implicită a tipului",
+    "f": "Se aruncă `KeyNotFoundException`",
+    "g": "Codul nu compilează",
+    "h": "Se generează un avertisment la compilare",
+    "Raspuns_corect": "['c', 'f']"
+  },
+  {
+    "Intrebare": "Ce afirmații sunt adevărate despre clasele `abstracte`?",
+    "a": "Pot avea metode fără implementare",
+    "b": "Pot fi instanțiate direct",
+    "c": "Pot avea metode virtuale",
+    "d": "Pot implementa interfețe",
+    "e": "Pot avea constructor",
+    "f": "Nu pot fi moștenite",
+    "g": "Pot conține câmpuri",
+    "h": "Pot conține proprietăți auto-implementate",
+    "Raspuns_corect": "['a', 'c', 'd', 'e', 'g', 'h']"
+  },
+  {
+    "Intrebare": "În ce ordine sunt executați constructorii în cazul moștenirii?\r\n```csharp\r\nclass Base { public Base() { } }\r\nclass Derived : Base { public Derived() { } }\r\n```",
+    "a": "Constructorul din clasa de bază este apelat primul",
+    "b": "Constructorul derivat este apelat primul",
+    "c": "Ordinea nu este definită",
+    "d": "Constructorul din bază nu este apelat implicit",
+    "e": "Este necesară apelarea explicită cu `base()`",
+    "f": "Apelul constructorului de bază este automat dacă nu este specificat",
+    "g": "Constructorii statici sunt apelați în altă ordine",
+    "h": "Constructorul derivat poate omite apelul către bază doar dacă e specificat `: this()`",
+    "Raspuns_corect": "['a', 'f', 'g']"
+  },
+  {
+    "Intrebare": "Ce clase sau interfețe sunt folosite pentru citirea conectată dintr-o bază de date?",
+    "a": "SqlDataAdapter",
+    "b": "DataSet",
+    "c": "SqlDataReader",
+    "d": "IDataReader",
+    "e": "SqlConnection",
+    "f": "IDbConnection",
+    "g": "StreamReader",
+    "h": "SqlCommand",
+    "Raspuns_corect": "['c', 'd', 'e', 'f', 'h']"
+  },
+  {
+    "Intrebare": "Ce caracteristici are o interfață în C#?",
+    "a": "Nu poate avea implementări implicite",
+    "b": "Poate conține câmpuri",
+    "c": "Poate conține proprietăți",
+    "d": "Poate avea metode fără corp",
+    "e": "Poate fi moștenită de o clasă",
+    "f": "Poate moșteni mai multe interfețe",
+    "g": "Nu poate avea constructor",
+    "h": "Toți membrii sunt implicit publici",
+    "Raspuns_corect": "['c', 'd', 'e', 'f', 'g', 'h']"
+  },
+  {
+    "Intrebare": "Ce excepții sunt frecvent aruncate în timpul execuției aplicațiilor C#?",
+    "a": "NullReferenceException",
+    "b": "IndexOutOfRangeException",
+    "c": "FormatException",
+    "d": "StackOverflowException",
+    "e": "DivideByZeroException",
+    "f": "IOException",
+    "g": "FileNotFoundException",
+    "h": "ApplicationException",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f', 'g']"
+  },
+  {
+    "Intrebare": "Ce efect are utilizarea cuvântului cheie `virtual` într-o metodă?",
+    "a": "Metoda poate fi redefinită într-o clasă derivată",
+    "b": "Metoda nu poate fi apelată",
+    "c": "Metoda devine implicit statică",
+    "d": "Metoda poate fi supraîncărcată",
+    "e": "Metoda devine abstractă",
+    "f": "Metoda poate fi apelată doar din interiorul clasei",
+    "g": "Metoda trebuie implementată în toate clasele derivate",
+    "h": "Metoda nu poate fi override",
+    "Raspuns_corect": "['a']"
+  },
+  {
+    "Intrebare": "Ce metode pot fi apelate într-un bloc `finally`?",
+    "a": "Metode care aruncă excepții",
+    "b": "Metode statice",
+    "c": "Metode virtuale",
+    "d": "Metode care închid conexiuni",
+    "e": "Metode private",
+    "f": "Orice metodă validă C#",
+    "g": "Doar metode din aceeași clasă",
+    "h": "Doar metode marcate cu `safe`",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f']"
+  },
+  {
+    "Intrebare": "Ce clase sau structuri sunt imutabile în mod implicit în .NET?",
+    "a": "string",
+    "b": "DateTime",
+    "c": "int",
+    "d": "StringBuilder",
+    "e": "Guid",
+    "f": "List<int>",
+    "g": "decimal",
+    "h": "Uri",
+    "Raspuns_corect": "['a', 'b', 'c', 'e', 'g', 'h']"
+  },
+  {
+    "Intrebare": "Ce acțiuni sunt posibile asupra unui obiect `SqlCommand`?",
+    "a": "Executarea unei interogări",
+    "b": "Executarea unui scalar",
+    "c": "Executarea unei comenzi fără rezultat",
+    "d": "Executarea unui cititor",
+    "e": "Modificarea conexiunii",
+    "f": "Stocarea în cache",
+    "g": "Executarea asincronă",
+    "h": "Încărcarea într-un DataSet",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'g']"
+  },
+  {
+    "Intrebare": "Ce clase implementează interfața `IEnumerable`?",
+    "a": "List<T>",
+    "b": "Array",
+    "c": "Dictionary<TKey, TValue>",
+    "d": "DataTable",
+    "e": "Queue<T>",
+    "f": "Stack<T>",
+    "g": "SqlDataReader",
+    "h": "IQueryable<T>",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f']"
+  },
+  {
+    "Intrebare": "Ce expresii folosesc `boxing` în C#?",
+    "a": "object o = 123;",
+    "b": "object o = true;",
+    "c": "object o = new DateTime();",
+    "d": "object o = (object)10;",
+    "e": "object o = 'x';",
+    "f": "string s = \"text\";",
+    "g": "dynamic d = 5;",
+    "h": "var o = (object)3.14;",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'h']"
+  },
+  {
+    "Intrebare": "Ce afirmații despre `interface` sunt corecte?",
+    "a": "Poate moșteni alte interfețe",
+    "b": "Poate avea metode fără implementare",
+    "c": "Nu poate conține câmpuri",
+    "d": "Poate fi implementată de mai multe clase",
+    "e": "Nu poate fi instanțiată",
+    "f": "Poate avea metode implicite (din C# 8)",
+    "g": "Poate avea evenimente",
+    "h": "Poate avea metode statice",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']"
+  },
+  {
+    "Intrebare": "Ce afirmații sunt adevărate despre `abstract class`?",
+    "a": "Nu poate fi instanțiată",
+    "b": "Poate conține metode implementate",
+    "c": "Poate avea constructor",
+    "d": "Poate implementa interfețe",
+    "e": "Poate avea metode abstracte",
+    "f": "Poate fi moștenită",
+    "g": "Poate avea evenimente",
+    "h": "Poate conține câmpuri statici",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']"
+  },
+  {
+    "Intrebare": "Ce metode din `SqlCommand` pot fi utilizate pentru a obține rezultate?",
+    "a": "ExecuteReader()",
+    "b": "ExecuteNonQuery()",
+    "c": "ExecuteScalar()",
+    "d": "ExecuteXmlReader()",
+    "e": "Fill()",
+    "f": "ExecuteAdapter()",
+    "g": "RunQuery()",
+    "h": "Perform()",
+    "Raspuns_corect": "['a', 'b', 'c', 'd']"
+  },
+  {
+    "Intrebare": "Ce poate face o constrângere generică `where T : class`?",
+    "a": "Limitează `T` la tipuri referință",
+    "b": "Permite utilizarea `null` pe `T`",
+    "c": "Exclude tipuri valoare",
+    "d": "Implică moștenirea din `object`",
+    "e": "Permite folosirea `as` și `is`",
+    "f": "Se poate combina cu alte constrângeri",
+    "g": "Este aplicabilă pe interfețe",
+    "h": "Poate fi folosită cu `new()`",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f', 'g']"
+  },
+  {
+    "Intrebare": "Ce se întâmplă când `throw` este folosit fără parametri într-un `catch`?",
+    "a": "Re-aruncă excepția curentă",
+    "b": "Generează o eroare de compilare",
+    "c": "Aruncă o nouă excepție",
+    "d": "Se comportă ca `throw ex;`",
+    "e": "Este echivalent cu `return;` în `catch`",
+    "f": "Păstrează StackTrace-ul original",
+    "g": "Se folosește pentru logare",
+    "h": "Anulează execuția `finally`",
+    "Raspuns_corect": "['a', 'f']"
+  },
+  {
+    "Intrebare": "Ce clase pot fi folosite pentru lucrul cu date XML în .NET?",
+    "a": "XmlDocument",
+    "b": "XmlReader",
+    "c": "XmlWriter",
+    "d": "XDocument",
+    "e": "XmlSerializer",
+    "f": "XPathNavigator",
+    "g": "XmlAdapter",
+    "h": "XmlDataTable",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f']"
+  },
+  {
+    "Intrebare": "Ce metode sunt specifice unei interogări LINQ pe `IEnumerable`?",
+    "a": "Select",
+    "b": "Where",
+    "c": "GroupBy",
+    "d": "Join",
+    "e": "SelectMany",
+    "f": "Sum",
+    "g": "ToDictionary",
+    "h": "SkipWhile",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']"
+  },
+  {
+    "Intrebare": "Ce se întâmplă în cazul unui `SqlConnection` deschis și neverificat?",
+    "a": "Rămâne deschisă în memorie",
+    "b": "Poate cauza scurgeri de resurse",
+    "c": "Se închide automat la GC",
+    "d": "Poate bloca alte conexiuni",
+    "e": "Este marcată automat pentru reutilizare",
+    "f": "Poate genera erori de tip timeout",
+    "g": "Se închide la finalul aplicației",
+    "h": "Este deconectată imediat",
+    "Raspuns_corect": "['a', 'b', 'd', 'f']"
+  },
+  {
+    "Intrebare": "Ce caracteristici are un `DataTable`?",
+    "a": "Poate exista independent de conexiune",
+    "b": "Poate conține coloane și rânduri",
+    "c": "Poate avea chei primare",
+    "d": "Poate avea constrângeri",
+    "e": "Poate fi serializat",
+    "f": "Poate fi legat la un DataGrid",
+    "g": "Nu permite rânduri duplicate",
+    "h": "Este doar pentru citire",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'f']"
+  },
+  {
+    "Intrebare": "Care sunt avantaje ale folosirii `using` cu `IDisposable`?",
+    "a": "Eliberarea automată a resurselor",
+    "b": "Cod mai curat și sigur",
+    "c": "Previne scurgerile de memorie",
+    "d": "Reduce erorile la închidere manuală",
+    "e": "Este echivalent cu try-finally",
+    "f": "Funcționează doar pe fișiere",
+    "g": "Se folosește doar în console apps",
+    "h": "Oferă performanță crescută întotdeauna",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e']"
+  },
+  {
+    "Intrebare": "Ce este `Aggregate()` în LINQ?",
+    "a": "O metodă de reducere",
+    "b": "Returnează o singură valoare",
+    "c": "Poate fi folosită pentru sume personalizate",
+    "d": "Este similar cu `fold` din funcțional",
+    "e": "Poate fi folosită cu lambda",
+    "f": "Necesită un selector",
+    "g": "Nu funcționează pe IEnumerable",
+    "h": "Este folosită doar cu numere",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e']"
+  },
+  {
+    "Intrebare": "Care sunt adevărate despre `SqlDataReader`?",
+    "a": "Este forward-only",
+    "b": "Este read-only",
+    "c": "Poate citi rânduri dintr-o bază de date",
+    "d": "Poate fi folosit cu `using`",
+    "e": "Implementează `IDataReader`",
+    "f": "Permite actualizarea directă a datelor",
+    "g": "Este asincron compatibil",
+    "h": "Se bazează pe conexiune activă",
+    "Raspuns_corect": "['a', 'b', 'c', 'd', 'e', 'g', 'h']"
+  },
+  {
+    "Intrebare": "Ce efect are `sealed` asupra unei clase?",
+    "a": "Previne moștenirea clasei",
+    "b": "Permite doar metode statice",
+    "c": "Împiedică override-ul metodelor",
+    "d": "Îmbunătățește performanța",
+    "e": "Se aplică și metodelor individuale",
+    "f": "Este opusul `abstract`",
+    "g": "Poate fi combinat cu `static`",
+    "h": "O clasă `sealed` poate implementa interfețe",
+    "Raspuns_corect": "['a', 'c', 'd', 'e', 'f', 'h']"
   }
 ]
