@@ -184,7 +184,7 @@
     "Raspuns_corect": "['a', 'c']"
   },
   {
-    "Intrebare": "Care dintre următoarele afirmații despre LINQ în C# sunt corecte?\r\n```csharp\r\n// Linq to Objects, Linq to Entities, Linq to XML\r\na) LINQ permite interogarea colecțiilor de date în memorie.\r\nb) LINQ funcționează exclusiv cu baze de date relaționale.\r\nc) LINQ poate fi utilizat pentru a interoga XML și JSON.\r\nd) LINQ suportă programarea paralelă cu PLINQ.\r\nRăspuns corect: a, c, d",
+    "Intrebare": "Care dintre următoarele afirmații despre LINQ în C# sunt corecte?",
     "a": "LINQ permite interogarea colecțiilor de date în memorie.",
     "b": "LINQ funcționează exclusiv cu baze de date relaționale.",
     "c": "LINQ poate fi utilizat pentru a interoga XML și JSON.",
@@ -1771,7 +1771,7 @@
     "Raspuns_corect": "['a']"
   },
   {
-    "Intrebare": "Daca se considera codul: class X { public X(){} private int a; } La instructiunea X x = new X(); unde se va aloca campul a?",
+    "Intrebare": "Daca se considera codul: ```csharp class X { public X(){} private int a; } La instructiunea X x = new X(); ``` unde se va aloca campul a?",
     "a": "pe stiva",
     "b": "in heap",
     "c": "nicaieri, eroare de compilare",
@@ -1793,7 +1793,7 @@
     "Raspuns_corect": "['a']"
   },
   {
-    "Intrebare": "Daca se considera codul:\r\nclass X1 { public X1(){} private int x; } \r\nLa instructiunea X x = new X1(); unde se va aloca campul x?",
+    "Intrebare": "Daca se considera codul: ```csharp\r\nclass X1 { public X1(){} private int x; } \r\nLa instructiunea X x = new X1();  ``` unde se va aloca campul x?",
     "a": "pe stiva",
     "b": "in heap",
     "c": "nicaieri, eroare de compilare",
@@ -1913,23 +1913,7 @@
     "Raspuns_corect": "['c']"
   },
   {
-    "Intrebare": "Ce va afisa la programul:\r\n(HumanClass si HumanStruct cu metoda ChangeName)\r\nvar human = new HumanClass { Name = \"James\" } ...",
-    "a": "James Andrew Andrew James",
-    "b": "Andrew James James James",
-    "c": "Andrew James James Andrew",
-    "d": "Andrew Andrew James Andrew",
-    "Raspuns_corect": "['c']"
-  },
-  {
-    "Intrebare": "Ce va afisa la programul:\r\n(HumanClass si HumanStruct definite, plus ChangeName cu ref)",
-    "a": "James Andrew Andrew James",
-    "b": "Andrew James James James",
-    "c": "Andrew James James Andrew",
-    "d": "Andrew Andrew James Andrew",
-    "Raspuns_corect": "[]"
-  },
-  {
-    "Intrebare": "Pentru linia de cod:\r\nvar x = 2.0m;\r\nCe este adevarat?",
+    "Intrebare": "Pentru linia de cod ce este ADEVARAT? ```csharp\r\nvar x = 2.0m; ```",
     "a": "Tipul lui x este determinat la compilare",
     "b": "Tipul lui x este determinat doar la rulare",
     "c": "Se folosesc tipuri de date dinamice (dynamic)",
@@ -1982,6 +1966,8 @@
     "b": "Cele declarate 'override'",
     "c": "Constructorii",
     "d": "Destructorii",
+    "e": "Orice",
+    "f": "Niciuna dintre variante",
     "Raspuns_corect": "['b']"
   },
   {
@@ -2195,11 +2181,11 @@
   },
   {
     "Intrebare": "Cum pot creea o clasa care sa nu poata fi derivate?",
-    "a": "nu se poate",
+    "a": "o declar sealed",
     "b": "o declar partial",
-    "c": "o declar static",
-    "d": "ii scriu toti constructorii ca private",
-    "Raspuns_corect": "['e']"
+    "c": "o declar sealed si static",
+    "d": "ii scriu toti constructorii ca private si statici",
+    "Raspuns_corect": "['a']"
   },
   {
     "Intrebare": "Pt cod: public void doSomething(){ int k; Console.WriteLine(\"(0)\",k);}",
@@ -2218,7 +2204,7 @@
     "Raspuns_corect": "['a','b','c','d']"
   },
   {
-    "Intrebare": "Pt codul: Person p=new Person(FirstName=”Rafael”); FirstName poate fi:",
+    "Intrebare": "Pt codul: ```csharp Person p=new Person(FirstName=”Rafael”); ```  `FirstName` poate fi:",
     "a": "camp public",
     "b": "proprietate auto-implementata",
     "c": "proprietatile public doar write-only",
@@ -2468,7 +2454,7 @@
     "Raspuns_corect": "['a']"
   },
   {
-    "Intrebare": "class A{int x; static void f() {x++;}} Ce se întâmplă?",
+    "Intrebare": "```csharp class A{int x; static void f() {x++;}} ```Ce se întâmplă?",
     "a": "Daca se da o valoare initiala lui x,e corecta",
     "b": "Se compileaza,dar da erori la insatntiere",
     "c": "Nu se compileaza",
@@ -2484,7 +2470,7 @@
     "Raspuns_corect": "['b','c']"
   },
   {
-    "Intrebare": "Notatia la un obiect DataReader:",
+    "Intrebare": "Notatia la un obiect` DataReader`:",
     "a": "permite determinarea faptului ca o coloana permite valoarea null",
     "b": "Nu permite aducerea valorilor dupa numele coloanelor",
     "c": "Nu permite aducerea de mai multe seturi de inregistrari",
@@ -2508,7 +2494,7 @@
     "Raspuns_corect": "['a','b','c','d']"
   },
   {
-    "Intrebare": "Ce interfata trebuie implementata pt a se folosi in foreach?",
+    "Intrebare": "Ce interfata trebuie implementata pt a se folosi in `foreach`?",
     "a": "IEnumerator",
     "b": "IEnumerable",
     "c": "ICollection",
@@ -2516,7 +2502,7 @@
     "Raspuns_corect": "['b']"
   },
   {
-    "Intrebare": "Cand se executa blocul finally?",
+    "Intrebare": "Cand se executa blocul `finally`?",
     "a": "doar cand e blocul catch present",
     "b": "doar cand nu e blocul catch present",
     "c": "doar cand nu apare exceptie in blocul try",
@@ -2540,7 +2526,7 @@
     "Raspuns_corect": "['a','c']"
   },
   {
-    "Intrebare": "Metoda pt umplerea unui DataTable este:",
+    "Intrebare": "Metoda pentru umplerea unui `DataTable` este:",
     "a": "DataAdapter,Read",
     "b": "DataReader,Read",
     "c": "DataAdapter,Update",
@@ -2580,7 +2566,7 @@
     "Raspuns_corect": "['b']"
   },
   {
-    "Intrebare": "Ce este: Using c = System.Console;",
+    "Intrebare": "Ce este: ```csharp Using c = System.Console;```",
     "a": "eroare la compilare",
     "b": "eroare la rulare",
     "c": "instructiune using",
@@ -3135,7 +3121,7 @@
     "Raspuns_corect": "['a','b']"
   },
   {
-    "Intrebare": "List<string> list = new List<string>{\"a\",\"b\",\"c\"} este valid din:",
+    "Intrebare": "```csharp List<string> list = new List<string>{\"a\",\"b\",\"c\"} ```este valid din:",
     "a": "C# 2.0",
     "b": "C# 2.5",
     "c": "C# 3.0",
