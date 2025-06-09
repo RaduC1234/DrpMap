@@ -74,12 +74,99 @@ export class QuizService {
         }
 
         const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-        const currentQuestion = availableQuestions[randomIndex];
+        const selectedQuestion = availableQuestions[randomIndex];
 
-        this.updateState({ currentQuestion });
+        console.log('Loading question, about to scramble...'); // Debug log
+
+        // Scramble the answers for this question
+        const scrambledQuestion = this.scrambleAnswers(selectedQuestion);
+
+        this.updateState({ currentQuestion: scrambledQuestion });
 
         // Track question start time
         this.questionStartTime = Date.now();
+    }
+
+    /**
+     * Scrambles the answer options while maintaining the correct answer mapping
+     */
+    private scrambleAnswers(question: Question): Question {
+        console.log('Original question:', question); // Debug log
+
+        // Get all available answer options
+        const answerKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const availableAnswers: Array<{key: string, value: string}> = [];
+
+        // Collect all non-empty answers
+        answerKeys.forEach(key => {
+            const value = (question.answers as any)?.[key];
+            if (value && value.trim() !== '') {
+                availableAnswers.push({ key, value });
+            }
+        });
+
+        console.log('Available answers:', availableAnswers); // Debug log
+
+        // If we have less than 2 answers, no point in scrambling
+        if (availableAnswers.length < 2) {
+            console.log('Not enough answers to scramble');
+            return question;
+        }
+
+        // Create arrays for shuffling
+        const answerValues = availableAnswers.map(a => a.value);
+        const shuffledValues = this.shuffleArray([...answerValues]);
+
+        console.log('Original values:', answerValues);
+        console.log('Shuffled values:', shuffledValues);
+
+        // Create new answer mapping and track the remapping
+        const scrambledAnswers: any = {};
+        const originalToNewMapping: {[key: string]: string} = {};
+
+        // Map shuffled values back to letters
+        shuffledValues.forEach((shuffledValue, index) => {
+            const newKey = answerKeys[index];
+            const originalAnswer = availableAnswers.find(a => a.value === shuffledValue);
+
+            if (originalAnswer) {
+                scrambledAnswers[newKey] = shuffledValue;
+                originalToNewMapping[originalAnswer.key] = newKey;
+            }
+        });
+
+        console.log('Original to new mapping:', originalToNewMapping);
+
+        // Update correct answers to match new letter assignments
+        const newCorrectAnswers = question.correct.map(originalKey => {
+            const newKey = originalToNewMapping[originalKey];
+            console.log(`Mapping correct answer: ${originalKey} -> ${newKey}`);
+            return newKey || originalKey;
+        });
+
+        console.log('Original correct answers:', question.correct);
+        console.log('New correct answers:', newCorrectAnswers);
+
+        const scrambledQuestion = {
+            ...question,
+            answers: scrambledAnswers,
+            correct: newCorrectAnswers
+        };
+
+        console.log('Scrambled question:', scrambledQuestion);
+        return scrambledQuestion;
+    }
+
+    /**
+     * Fisher-Yates shuffle algorithm
+     */
+    private shuffleArray<T>(array: T[]): T[] {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
     }
 
     toggleAnswer(answer: string): void {
