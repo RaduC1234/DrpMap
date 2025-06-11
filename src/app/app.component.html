@@ -1,12 +1,47 @@
-<!-- Fixed HTML template to match the original working design -->
+<!-- Fixed HTML template to match the original working design with debug mode -->
 <div class="container">
     <!-- Header with blue gradient -->
     <div class="header">
         <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'">
             <span class="theme-icon">{{ isDarkTheme ? '☀️' : '🌙' }}</span>
         </button>
-        <h1>🗺️ {{ title }}</h1>
+        <!-- Debug activation: click title 5 times quickly -->
+        <h1 (click)="onTitleClick()" style="cursor: pointer; user-select: none;"
+            [title]="isDebugMode() ? 'DEBUG MODE ACTIVE' : 'Click 5 times for debug mode'">
+            🗺️ {{ title }}
+        </h1>
         <p>Test your knowledge with our interactive quiz</p>
+    </div>
+
+    <!-- Debug Panel (only visible in debug mode) -->
+    <div *ngIf="isDebugMode()" class="debug-panel">
+        <div class="debug-info">
+            🐛 DEBUG MODE: {{ getDebugInfo() }}
+        </div>
+        <div class="debug-controls">
+            <button class="btn btn-debug" (click)="toggleDebugMode()">
+                Exit Debug Mode
+            </button>
+        </div>
+        <!-- Direct Question Navigation -->
+        <div class="debug-navigation" *ngIf="quizState.currentView === 'quiz'">
+            <label for="goToQuestion" class="debug-label">Go to Question:</label>
+            <div class="debug-go-to-controls">
+                <input
+                        type="number"
+                        id="goToQuestion"
+                        [(ngModel)]="goToQuestionNumber"
+                        [min]="1"
+                        [max]="getTotalQuestions()"
+                        class="debug-input"
+                        (keypress)="onGoToQuestionKeyPress($event)"
+                        placeholder="1">
+                <span class="debug-range">/ {{ getTotalQuestions() }}</span>
+                <button class="btn btn-debug-small" (click)="goToQuestion()" title="Go to question">
+                    ➤
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Start Screen -->
@@ -15,6 +50,9 @@
             <div class="start-icon">🚀</div>
             <h2>Welcome to the Quiz App</h2>
             <p>Test your knowledge with randomized questions!</p>
+            <div *ngIf="isDebugMode()" class="debug-notice">
+                🐛 Debug mode is active - questions will be shown in order with correct answers highlighted
+            </div>
             <button class="btn btn-start" (click)="startQuiz()">🚀 Start Quiz</button>
         </div>
     </div>
@@ -30,14 +68,23 @@
         <!-- Quiz Header -->
         <div class="quiz-header">
             <div class="question-counter">
-                Question {{quizState.questionsAnswered + 1}} of 37
-                <small>({{quizState.allQuestions.length}} total available)</small>
+                <span *ngIf="!isDebugMode()">
+                    Question {{quizState.questionsAnswered + 1}} of 37
+                    <small>({{quizState.allQuestions.length}} total available)</small>
+                </span>
+                <span *ngIf="isDebugMode()">
+                    Question {{(quizState.currentQuestionIndex || 0) + 1}} of {{quizState.allQuestions.length}}
+                    <small>(DEBUG MODE - Sequential)</small>
+                </span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" [style.width.%]="getProgress()"></div>
             </div>
-            <div class="score-display">
+            <div class="score-display" *ngIf="!isDebugMode()">
                 Score: {{quizState.score}}/{{quizState.questionsAnswered}}
+            </div>
+            <div class="debug-display" *ngIf="isDebugMode()">
+                🐛 DEBUG - ID: {{getCurrentQuestion().id}}
             </div>
         </div>
 
@@ -53,28 +100,36 @@
                 </ng-container>
             </div>
 
+            <!-- Debug info for correct answers -->
+            <div *ngIf="isDebugMode()" class="debug-correct-answers">
+                ✅ Correct Answer(s): {{getCorrectAnswersText()}}
+            </div>
+
             <!-- Answers -->
             <div class="answers">
                 <div class="answer-option"
                      *ngFor="let answer of getAnswerEntries()"
-                     [class.selected]="isAnswerSelected(answer.key)"
-                     [class.correct]="quizState.hasAnswered && isCorrectAnswer(answer.key)"
-                     [class.incorrect]="quizState.hasAnswered && isAnswerSelected(answer.key) && !isCorrectAnswer(answer.key)"
-                     [class.disabled]="quizState.hasAnswered"
+                     [class]="getAnswerButtonClass(answer.key)"
+                     [class.disabled]="quizState.hasAnswered && !isDebugMode()"
                      (click)="toggleAnswer(answer.key)">
 
                     <input type="checkbox"
                            class="answer-checkbox"
                            [checked]="isAnswerSelected(answer.key)"
-                           [disabled]="quizState.hasAnswered">
+                           [disabled]="quizState.hasAnswered && !isDebugMode()">
 
                     <div class="answer-text" [innerHTML]="formatAnswerText(answer.key, answer.value)"></div>
+
+                    <!-- Debug indicator for correct answers -->
+                    <span *ngIf="isDebugMode() && isCorrectAnswer(answer.key)" class="debug-correct-indicator">
+                        ✓ CORRECT
+                    </span>
                 </div>
             </div>
 
-            <!-- Result Panel -->
+            <!-- Result Panel (hidden in debug mode) -->
             <div class="result-panel"
-                 *ngIf="quizState.hasAnswered"
+                 *ngIf="quizState.hasAnswered && !isDebugMode()"
                  [class.correct]="quizState.lastAnswerCorrect"
                  [class.incorrect]="!quizState.lastAnswerCorrect">
                 <strong>{{quizState.lastAnswerCorrect ? '✅ Correct!' : '❌ Incorrect'}}</strong>
@@ -86,21 +141,39 @@
 
             <!-- Controls -->
             <div class="controls">
-                <button class="btn btn-secondary"
+                <!-- Debug Mode Controls -->
+                <button *ngIf="isDebugMode()" class="btn btn-secondary"
+                        (click)="previousQuestion()"
+                        [disabled]="(quizState.currentQuestionIndex || 0) === 0">
+                    ⬅️ Previous
+                </button>
+
+                <button *ngIf="isDebugMode()" class="btn btn-primary"
+                        (click)="nextQuestion()"
+                        [disabled]="(quizState.currentQuestionIndex || 0) >= quizState.allQuestions.length - 1">
+                    ➡️ Next
+                </button>
+
+                <button *ngIf="isDebugMode()" class="btn btn-success"
+                        (click)="submitAnswer()"
+                        [disabled]="quizState.selectedAnswers.length === 0">
+                    ✅ Test Submit
+                </button>
+
+                <!-- Normal Mode Controls -->
+                <button *ngIf="!isDebugMode()" class="btn btn-secondary"
                         (click)="skipQuestion()"
                         [disabled]="quizState.hasAnswered && quizState.questionsAnswered >= 37">
                     ⏭️ Skip Question
                 </button>
 
-                <button class="btn btn-success"
-                        *ngIf="!quizState.hasAnswered"
+                <button *ngIf="!isDebugMode() && !quizState.hasAnswered" class="btn btn-success"
                         (click)="submitAnswer()"
                         [disabled]="quizState.selectedAnswers.length === 0">
                     ✅ Submit Answer
                 </button>
 
-                <button class="btn btn-primary"
-                        *ngIf="quizState.hasAnswered"
+                <button *ngIf="!isDebugMode() && quizState.hasAnswered" class="btn btn-primary"
                         (click)="nextQuestion()">
                     {{quizState.questionsAnswered >= 37 ? '🏁 Finish Quiz' : '➡️ Next Question'}}
                 </button>

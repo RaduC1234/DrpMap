@@ -36,7 +36,7 @@ export interface FormattedContent {
 export type ViewState = 'start' | 'loading' | 'quiz' | 'results';
 
 export interface QuizState {
-    currentView: ViewState;
+    currentView: 'start' | 'loading' | 'quiz' | 'results';
     allQuestions: Question[];
     currentQuestion: Question | null;
     usedQuestionIds: Set<number>;
@@ -45,4 +45,6 @@ export interface QuizState {
     selectedAnswers: string[];
     hasAnswered: boolean;
     lastAnswerCorrect: boolean;
+    debugMode: boolean;           // Add this
+    currentQuestionIndex: number; // Add this
 }

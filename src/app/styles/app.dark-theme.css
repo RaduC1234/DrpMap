@@ -167,6 +167,19 @@
     }
 }
 
+/* iOS Safari specific dark theme fixes */
+@supports (-webkit-touch-callout: none) {
+    @media (max-width: 768px) {
+        .dark-theme :host {
+            min-height: -webkit-fill-available;
+        }
+    }
+
+    .dark-theme body::before {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+}
+
 /* System preference detection */
 @media (prefers-color-scheme: dark) {
     /* Auto dark theme styles will be handled by the service */

@@ -21,7 +21,9 @@ export class QuizService {
         questionsAnswered: 0,
         selectedAnswers: [],
         hasAnswered: false,
-        lastAnswerCorrect: false
+        lastAnswerCorrect: false,
+        debugMode: false,
+        currentQuestionIndex: 0
     });
 
     public quizState$: Observable<QuizState> = this.quizStateSubject.asObservable();
@@ -46,11 +48,18 @@ export class QuizService {
                 usedQuestionIds: new Set(),
                 score: 0,
                 questionsAnswered: 0,
-                currentView: 'quiz'
+                currentView: 'quiz',
+                currentQuestionIndex: 0
             };
 
             this.updateState(newState);
-            this.loadRandomQuestion();
+
+            if (this.currentState.debugMode) {
+                this.loadQuestionByIndex(0);
+            } else {
+                this.loadRandomQuestion();
+            }
+
             this.resetQuestion();
 
             // Track quiz start
@@ -78,13 +87,54 @@ export class QuizService {
 
         console.log('Loading question, about to scramble...'); // Debug log
 
-        // Scramble the answers for this question
-        const scrambledQuestion = this.scrambleAnswers(selectedQuestion);
+        // Scramble the answers for this question (unless in debug mode)
+        const finalQuestion = state.debugMode ? selectedQuestion : this.scrambleAnswers(selectedQuestion);
 
-        this.updateState({ currentQuestion: scrambledQuestion });
+        this.updateState({ currentQuestion: finalQuestion });
 
         // Track question start time
         this.questionStartTime = Date.now();
+    }
+
+    loadQuestionByIndex(index: number): void {
+        const state = this.currentState;
+
+        if (index < 0 || index >= state.allQuestions.length) {
+            console.warn(`Invalid question index: ${index}. Valid range: 0-${state.allQuestions.length - 1}`);
+            return;
+        }
+
+        const selectedQuestion = state.allQuestions[index];
+
+        // In debug mode, don't scramble answers
+        const finalQuestion = state.debugMode ? selectedQuestion : this.scrambleAnswers(selectedQuestion);
+
+        this.updateState({
+            currentQuestion: finalQuestion,
+            currentQuestionIndex: index
+        });
+
+        // Track question start time
+        this.questionStartTime = Date.now();
+    }
+
+    goToQuestion(questionNumber: number): boolean {
+        const index = questionNumber - 1; // Convert 1-based to 0-based
+        const state = this.currentState;
+
+        if (!state.debugMode) {
+            console.warn('Direct question navigation only available in debug mode');
+            return false;
+        }
+
+        if (index < 0 || index >= state.allQuestions.length) {
+            console.warn(`Invalid question number: ${questionNumber}. Valid range: 1-${state.allQuestions.length}`);
+            return false;
+        }
+
+        this.loadQuestionByIndex(index);
+        this.resetQuestion();
+        return true;
     }
 
     /**
@@ -230,18 +280,63 @@ export class QuizService {
             this.updateState({ usedQuestionIds: newUsedIds });
         }
 
-        if (state.questionsAnswered >= this.MAX_QUESTIONS) {
-            this.showResults();
-            return;
+        if (state.debugMode) {
+            // In debug mode, go to next question in sequence
+            const nextIndex = (state.currentQuestionIndex || 0) + 1;
+            this.loadQuestionByIndex(nextIndex);
+        } else {
+            // Normal mode - check if we've reached max questions
+            if (state.questionsAnswered >= this.MAX_QUESTIONS) {
+                this.showResults();
+                return;
+            }
+            this.loadRandomQuestion();
         }
 
-        this.loadRandomQuestion();
+        this.resetQuestion();
+    }
+
+    previousQuestion(): void {
+        const state = this.currentState;
+
+        if (!state.debugMode) return; // Only available in debug mode
+
+        const prevIndex = Math.max(0, (state.currentQuestionIndex || 0) - 1);
+        this.loadQuestionByIndex(prevIndex);
         this.resetQuestion();
     }
 
     skipQuestion(): void {
-        this.loadRandomQuestion();
-        this.resetQuestion();
+        if (this.currentState.debugMode) {
+            // In debug mode, just go to next question
+            this.nextQuestion();
+        } else {
+            // Normal mode - load random question
+            this.loadRandomQuestion();
+            this.resetQuestion();
+        }
+    }
+
+    toggleDebugMode(): void {
+        const state = this.currentState;
+        const newDebugMode = !state.debugMode;
+
+        console.log(`Debug mode ${newDebugMode ? 'ENABLED' : 'DISABLED'}`);
+
+        this.updateState({
+            debugMode: newDebugMode,
+            currentQuestionIndex: 0
+        });
+
+        // If we're in quiz mode and toggling debug, reload current question
+        if (state.currentView === 'quiz' && state.allQuestions.length > 0) {
+            if (newDebugMode) {
+                this.loadQuestionByIndex(0);
+            } else {
+                this.loadRandomQuestion();
+            }
+            this.resetQuestion();
+        }
     }
 
     restartQuiz(): void {
@@ -261,7 +356,9 @@ export class QuizService {
             questionsAnswered: 0,
             selectedAnswers: [],
             hasAnswered: false,
-            lastAnswerCorrect: false
+            lastAnswerCorrect: false,
+            currentQuestionIndex: 0
+            // Keep debugMode state when restarting
         });
     }
 
@@ -299,11 +396,34 @@ export class QuizService {
     // Utility methods for components
     getProgress(): number {
         const state = this.currentState;
+        if (state.debugMode) {
+            return (((state.currentQuestionIndex || 0) + 1) / state.allQuestions.length) * 100;
+        }
         return (state.questionsAnswered / this.MAX_QUESTIONS) * 100;
     }
 
     getScorePercentage(): number {
         const state = this.currentState;
         return state.questionsAnswered > 0 ? Math.round((state.score / state.questionsAnswered) * 100) : 0;
+    }
+
+    // Debug mode utilities
+    isDebugMode(): boolean {
+        return this.currentState.debugMode || false;
+    }
+
+    getDebugInfo(): string {
+        const state = this.currentState;
+        if (!state.debugMode || !state.currentQuestion) return '';
+
+        return `Question ${(state.currentQuestionIndex || 0) + 1} of ${state.allQuestions.length} | ID: ${state.currentQuestion.id} | Correct: ${state.currentQuestion.correct.join(', ')}`;
+    }
+
+    getTotalQuestions(): number {
+        return this.currentState.allQuestions.length;
+    }
+
+    getCurrentQuestionNumber(): number {
+        return (this.currentState.currentQuestionIndex || 0) + 1;
     }
 }

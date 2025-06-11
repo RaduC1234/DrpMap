@@ -22,8 +22,11 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'DrpMap';
 
     quizState!: QuizState;
-    isDarkTheme = false; // Add this
+    isDarkTheme = false;
     private destroy$ = new Subject<void>();
+    private debugClickCount = 0;
+    private debugClickTimer: any;
+    goToQuestionNumber: number = 1; // For direct question navigation
 
     constructor(
         private quizService: QuizService,
@@ -40,6 +43,10 @@ export class AppComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(state => {
                 this.quizState = state;
+                // Update go-to input when question changes in debug mode
+                if (state.debugMode && state.currentView === 'quiz') {
+                    this.updateGoToQuestionNumber();
+                }
             });
 
         // Subscribe to theme changes
@@ -55,8 +62,60 @@ export class AppComponent implements OnInit, OnDestroy {
         this.themeService.toggleTheme();
     }
 
+    toggleDebugMode(): void {
+        this.quizService.toggleDebugMode();
+    }
+
+    goToQuestion(): void {
+        if (this.goToQuestionNumber && this.isDebugMode()) {
+            const success = this.quizService.goToQuestion(this.goToQuestionNumber);
+            if (!success) {
+                const maxQuestions = this.quizService.getTotalQuestions();
+                alert(`Invalid question number. Please enter a number between 1 and ${maxQuestions}.`);
+            }
+        }
+    }
+
+    onGoToQuestionKeyPress(event: KeyboardEvent): void {
+        if (event.key === 'Enter') {
+            this.goToQuestion();
+        }
+    }
+
+    updateGoToQuestionNumber(): void {
+        // Update the input field with current question number when switching to debug mode
+        if (this.isDebugMode()) {
+            this.goToQuestionNumber = this.quizService.getCurrentQuestionNumber();
+        }
+    }
+
+    getTotalQuestions(): number {
+        return this.quizService.getTotalQuestions();
+    }
+
+    // Debug mode activation - click title area 5 times quickly
+    onTitleClick(): void {
+        this.debugClickCount++;
+
+        if (this.debugClickTimer) {
+            clearTimeout(this.debugClickTimer);
+        }
+
+        this.debugClickTimer = setTimeout(() => {
+            this.debugClickCount = 0;
+        }, 2000); // Reset counter after 2 seconds
+
+        if (this.debugClickCount >= 5) {
+            this.quizService.toggleDebugMode();
+            this.debugClickCount = 0;
+            clearTimeout(this.debugClickTimer);
+        }
+    }
 
     ngOnDestroy(): void {
+        if (this.debugClickTimer) {
+            clearTimeout(this.debugClickTimer);
+        }
         this.destroy$.next();
         this.destroy$.complete();
     }
@@ -76,6 +135,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     nextQuestion(): void {
         this.quizService.nextQuestion();
+    }
+
+    previousQuestion(): void {
+        this.quizService.previousQuestion();
     }
 
     skipQuestion(): void {
@@ -160,5 +223,39 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
             return 'Keep practicing! 💪';
         }
+    }
+
+    // Debug mode methods
+    isDebugMode(): boolean {
+        return this.quizService.isDebugMode();
+    }
+
+    getDebugInfo(): string {
+        return this.quizService.getDebugInfo();
+    }
+
+    // Helper method to get answer button classes
+    getAnswerButtonClass(answer: string): string {
+        const baseClass = 'answer-option';
+        const isSelected = this.isAnswerSelected(answer);
+        const isCorrect = this.isCorrectAnswer(answer);
+        const hasAnswered = this.quizState.hasAnswered;
+        const isDebug = this.isDebugMode();
+
+        let classes = [baseClass];
+
+        if (isDebug && isCorrect) {
+            classes.push('debug-correct');
+        } else if (hasAnswered) {
+            if (isCorrect) {
+                classes.push('correct');
+            } else if (isSelected) {
+                classes.push('incorrect');
+            }
+        } else if (isSelected) {
+            classes.push('selected');
+        }
+
+        return classes.join(' ');
     }
 }

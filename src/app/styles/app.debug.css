@@ -1,0 +1,239 @@
+/* Debug Mode Styles */
+.debug-panel {
+    background: linear-gradient(135deg, #ff6b6b, #ffa500);
+    border: 2px solid #ff4757;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 800px;
+    color: white;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    animation: debug-pulse 2s infinite;
+}
+
+@keyframes debug-pulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3); }
+    50% { box-shadow: 0 4px 25px rgba(255, 71, 87, 0.6); }
+}
+
+.debug-info {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.debug-controls {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.debug-navigation {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.debug-label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.debug-go-to-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.debug-input {
+    width: 80px;
+    padding: 6px 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.debug-input:focus {
+    outline: none;
+    border-color: white;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.debug-range {
+    font-size: 14px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    min-width: 40px;
+}
+
+.btn-debug {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-debug:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.btn-debug-small {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 40px;
+}
+
+.btn-debug-small:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.debug-notice {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid #ff6b6b;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 14px;
+    color: #ff6b6b;
+    text-align: center;
+}
+
+.debug-correct-answers {
+    background: rgba(40, 167, 69, 0.1);
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 15px 0;
+    font-weight: bold;
+    color: #28a745;
+    text-align: center;
+    font-size: 16px;
+}
+
+.debug-display {
+    color: #ff6b6b;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.debug-controls-quiz {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.debug-correct-indicator {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 12px;
+    margin-left: auto;
+    padding: 2px 6px;
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 4px;
+}
+
+/* Enhanced answer option styles for debug mode */
+.answer-option.debug-correct {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
+    border: 2px solid #28a745 !important;
+    color: #155724 !important;
+    position: relative;
+}
+
+.answer-option.debug-correct::before {
+    content: "✓";
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    color: #28a745;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.answer-option.debug-correct:hover {
+    background: linear-gradient(135deg, #c3e6cb, #b8dabd) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* Debug mode title styling */
+h1[title*="DEBUG"] {
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: debug-title-glow 2s infinite alternate;
+}
+
+@keyframes debug-title-glow {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.5)); }
+    100% { filter: drop-shadow(0 0 15px rgba(255, 165, 0, 0.8)); }
+}
+
+/* Responsive debug controls */
+@media (max-width: 768px) {
+    .debug-controls-quiz {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .debug-panel {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .debug-info {
+        font-size: 12px;
+    }
+
+    .debug-go-to-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .debug-input {
+        width: 60px;
+        font-size: 12px;
+    }
+}
+
+/* Dark theme adjustments for debug mode */
+.container.dark-theme .debug-panel {
+    background: linear-gradient(135deg, #8b0000, #ff4500);
+}
+
+.container.dark-theme .debug-notice {
+    background: rgba(139, 0, 0, 0.2);
+    border-color: #8b0000;
+    color: #ff6b6b;
+}
+
+.container.dark-theme .debug-correct-answers {
+    background: rgba(0, 100, 0, 0.2);
+    border-color: #006400;
+    color: #90EE90;
+}

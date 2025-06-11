@@ -2154,14 +2154,6 @@
     "Raspuns_corect": "['a','c']"
   },
   {
-    "Intrebare": "Cum pot creea o clasa care sa nu poata fi derivate?",
-    "a": "o declar sealed",
-    "b": "o declar partial",
-    "c": "o declar sealed si static",
-    "d": "ii scriu toti constructorii ca private si statici",
-    "Raspuns_corect": "['a']"
-  },
-  {
     "Intrebare": "Pt cod: public void doSomething(){ int k; Console.WriteLine(\"(0)\",k);}",
     "a": "se face bowing",
     "b": "se face unbowing",
@@ -2358,9 +2350,11 @@
   {
     "Intrebare": "Cum pot creea o clasa care sa nu poata fi derivate?",
     "a": "nu se poate",
-    "b": "o declar partial",
-    "c": "o declar static",
-    "d": "ii scriu toti constructorii ca private",
+    "b": "o declar `partial`",
+    "c": "o declar `static`",
+    "d": "ii scriu toti constructorii ca `private`",
+    "e": "o declar `sealed`",
+    "f": "Niciuna dintre variante",
     "Raspuns_corect": "['e']"
   },
   {

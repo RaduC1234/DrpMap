@@ -86,6 +86,14 @@
     box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
     transform: translateY(0);
     transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    min-width: 200px;
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .btn-start:hover {
@@ -236,16 +244,24 @@
     color: #721c24;
 }
 
-/* Control Buttons */
+/* Control Buttons - IMPROVED DESKTOP AND MOBILE LAYOUT */
 .controls {
     display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-    gap: 15px;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 40px;
+    gap: 30px;
+    width: 100%;
+}
+
+/* Debug mode gets special layout */
+.controls:has(.btn-secondary:first-child) {
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn {
-    padding: 12px 24px;
+    padding: 12px 28px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -254,7 +270,10 @@
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    min-width: 160px;
+    height: 44px;
 }
 
 .btn:disabled {
@@ -288,6 +307,20 @@
 
 .btn-success:hover:not(:disabled) {
     background: #218838;
+}
+
+/* Debug controls layout fix */
+.controls:has(.btn-secondary:first-child) {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.controls:has(.btn-secondary:first-child) .btn {
+    min-width: 140px;
+    flex: none;
 }
 
 /* Final Results Styles */
@@ -366,8 +399,40 @@
         width: 100%;
     }
 
+    /* MOBILE BUTTON LAYOUT - SIGNIFICANTLY MORE SPACED */
     .controls {
         flex-direction: column;
+        gap: 35px; /* Increased from 18px to 35px for more spacing */
+        align-items: stretch;
+        margin-top: 50px; /* Increased top margin */
+        padding: 0 10px; /* Add horizontal padding */
+    }
+
+    .btn {
+        padding: 12px 20px; /* Keep original padding */
+        font-size: 1rem; /* Keep original font size */
+        min-width: unset;
+        width: 100%;
+        max-width: none;
+        height: 44px; /* Keep original height */
+        justify-content: flex-start; /* Keep original alignment */
+        font-weight: 500; /* Keep original font weight */
+    }
+
+
+
+    .debug-controls-quiz {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 25px; /* Increased gap */
+        margin-top: 40px;
+        padding: 0 10px;
+    }
+
+    .debug-controls-quiz .btn {
+        width: 100%;
+        min-width: unset;
+        height: 48px;
     }
 
     .header h1 {
@@ -378,22 +443,26 @@
         font-size: 1.1rem;
     }
 
-    .btn {
-        padding: 15px 20px;
-        font-size: 0.9rem;
-    }
-
     .quiz-container {
         padding: 20px;
         background: transparent;
     }
 
     .question-card {
-        padding: 20px;
+        padding: 25px; /* Increased padding */
+        margin-bottom: 25px;
     }
 
     .start-screen {
         padding: 40px 20px;
+    }
+}
+
+@supports (-webkit-touch-callout: none) {
+    @media (max-width: 768px) {
+        :host {
+            min-height: -webkit-fill-available;
+        }
     }
 }
 
@@ -407,12 +476,31 @@
         border-radius: 6px;
     }
 
+    /* EXTRA SMALL MOBILE - EVEN MORE SPACING */
+    .controls {
+        gap: 40px; /* Even more spacing on very small screens */
+        margin-top: 55px;
+        padding: 0 5px;
+    }
+
+    .btn {
+        padding: 14px 18px; /* Keep closer to original */
+        font-size: 0.95rem; /* Keep original smaller mobile size */
+        height: 42px; /* Keep original height */
+        font-weight: 500; /* Keep original weight */
+    }
+
+    .debug-controls-quiz {
+        gap: 30px;
+        margin-top: 45px;
+    }
+
     .quiz-container {
         padding: 15px;
     }
 
     .question-card {
-        padding: 15px;
+        padding: 20px;
     }
 
     .header {
@@ -422,4 +510,28 @@
     .header h1 {
         font-size: 1.8rem;
     }
+}
+
+/* Desktop-specific button positioning improvements */
+@media (min-width: 769px) {
+    .controls {
+        position: relative;
+        margin-top: 45px;
+        padding: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* When there are exactly 2 buttons, force them to opposite ends */
+    .controls .btn:only-child ~ .btn,
+    .controls .btn:first-child:nth-last-child(2) ~ .btn {
+        margin-left: auto;
+    }
+}
+
+/* Ensure proper spacing for all button containers */
+.quiz-container .controls {
+    margin-top: 35px;
 }
