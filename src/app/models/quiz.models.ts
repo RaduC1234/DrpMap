@@ -12,6 +12,7 @@ export interface Question {
         h?: string;
     };
     correct: string[];
+    resource?: string;
 }
 
 export interface ExcelRow {
@@ -24,7 +25,8 @@ export interface ExcelRow {
     f?: string;
     g?: string;
     h?: string;
-    Raspuns_corect: string;
+    Raspuns_corect: string | string[]; // Fixed: was 'correct', should be 'Raspuns_corect'
+    resource?: string;
 }
 
 export interface FormattedContent {
@@ -45,6 +47,6 @@ export interface QuizState {
     selectedAnswers: string[];
     hasAnswered: boolean;
     lastAnswerCorrect: boolean;
-    debugMode: boolean;           // Add this
-    currentQuestionIndex: number; // Add this
+    debugMode: boolean;
+    currentQuestionIndex: number;
 }

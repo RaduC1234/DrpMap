@@ -1,0 +1,80 @@
+/* Question Image Styles */
+.question-image {
+    margin: 25px 0;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.resource-image {
+    max-width: 100%;
+    max-height: 400px;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.resource-image:hover {
+    transform: scale(1.02);
+}
+
+/* Dark theme support for images */
+.dark-theme .question-image {
+    background: #374151;
+    border-color: #4b5563;
+}
+
+.dark-theme .resource-image {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .question-image {
+        margin: 20px 0;
+        padding: 10px;
+    }
+
+    .resource-image {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .resource-image {
+        max-height: 250px;
+    }
+}
+
+/* Image loading states */
+.resource-image {
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Error state for broken images */
+.image-error {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.dark-theme .image-error {
+    background: #7f1d1d;
+    border-color: #ef4444;
+    color: #fecaca;
+}

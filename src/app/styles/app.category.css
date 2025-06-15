@@ -1,0 +1,256 @@
+.start-content {
+  max-width: 800px; /* Changed from 500px */
+}
+
+/* Subject Selection Styles */
+.subject-selection {
+  margin: 40px 0;
+}
+
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.subject-card {
+  background: white;
+  border: 3px solid #e9ecef;
+  border-radius: 16px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+.subject-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.subject-icon {
+  font-size: 3.5rem;
+  margin-bottom: 15px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.subject-card h3 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.subject-card p {
+  color: #6c757d;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+}
+
+.subject-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  font-size: 0.85rem;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn-subject {
+  width: 100%;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.btn-subject:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  filter: brightness(110%);
+}
+
+/* Selected Subject Display */
+.selected-subject {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+}
+
+.selected-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+}
+
+.selected-icon {
+  font-size: 2rem;
+}
+
+.selected-text {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.btn-change {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-change:hover {
+  background: #545b62;
+}
+
+/* Subject Badge in Results */
+.subject-badge {
+  display: inline-block;
+  background: #4a90e2;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Mobile Responsive for Subject Selection */
+@media (max-width: 768px) {
+  .subject-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .subject-card {
+    padding: 20px;
+  }
+
+  .subject-icon {
+    font-size: 3rem;
+  }
+
+  .selected-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .selected-text {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .subject-card {
+    padding: 15px;
+  }
+
+  .subject-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .subject-icon {
+    font-size: 2.5rem;
+  }
+
+  .btn-subject {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Simple Subject Buttons */
+.simple-subject-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.btn-subject-simple {
+  width: 100%;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 18px 30px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-subject-simple:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  filter: brightness(110%);
+}
+
+.btn-subject-simple:active {
+  transform: translateY(-1px);
+}
+
+/* Dark theme for simple buttons */
+.dark-theme .btn-subject-simple {
+  background: #3b82f6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.dark-theme .btn-subject-simple:hover {
+  background: #2563eb;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .simple-subject-buttons {
+    max-width: 100%;
+    gap: 15px;
+  }
+
+  .btn-subject-simple {
+    padding: 16px 24px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-subject-simple {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+}

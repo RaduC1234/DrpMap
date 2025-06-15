@@ -184,3 +184,76 @@
 @media (prefers-color-scheme: dark) {
     /* Auto dark theme styles will be handled by the service */
 }
+
+/* Dark theme subject selection styles */
+.dark-theme .subject-selection {
+    color: #e0e0e0;
+}
+
+.dark-theme .subject-card {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e0e0e0;
+}
+
+.dark-theme .subject-card:hover {
+    background: #4b5563;
+    border-color: #60a5fa;
+}
+
+.dark-theme .subject-card h3 {
+    color: #e0e0e0;
+}
+
+.dark-theme .subject-card p {
+    color: #9ca3af;
+}
+
+.dark-theme .stat-item {
+    color: #d1d5db;
+}
+
+.dark-theme .btn-subject {
+    background: #3b82f6;
+    color: white;
+}
+
+.dark-theme .btn-subject:hover {
+    background: #2563eb;
+}
+
+.dark-theme .selected-subject {
+    background: #374151;
+    border-color: #4b5563;
+}
+
+.dark-theme .selected-info {
+    background: #2d3748;
+    color: #e0e0e0;
+}
+
+.dark-theme .selected-text {
+    color: #e0e0e0;
+}
+
+.dark-theme .btn-change {
+    background: #6b7280;
+    color: white;
+}
+
+.dark-theme .btn-change:hover {
+    background: #4b5563;
+}
+
+.dark-theme .subject-badge {
+    background: #3b82f6;
+    color: white;
+}
+
+.dark-theme .start-content h2 {
+    color: #ffffff !important;
+}
+
+.dark-theme .start-content p {
+    color: #e0e0e0 !important;
+}

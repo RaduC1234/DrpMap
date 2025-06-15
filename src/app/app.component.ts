@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewEncapsulation} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HighlightModule } from 'ngx-highlightjs';
-import { Subject, takeUntil } from 'rxjs';
-
+import { Subscription } from 'rxjs';
 import { QuizService } from './services/quiz.service';
-import { TextFormatterService } from './services/text-formater.service';
 import { AnalyticsService } from './services/analytics.service';
-import { Question, QuizState, FormattedContent } from './models/quiz.models';
-import {ThemeService} from "./services/theme.service";
+import { ThemeService } from './services/theme.service';
+import { TextFormatterService } from './services/text-formater.service';
+import { QUIZ_CATEGORIES, QuizCategory } from './quiz-configuration';
+import { Question, FormattedContent } from './models/quiz.models';
+import {HighlightModule} from "ngx-highlightjs";
 
 @Component({
     selector: 'app-root',
@@ -19,113 +19,81 @@ import {ThemeService} from "./services/theme.service";
     encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit, OnDestroy {
-    title = 'DrpMap';
+    title = 'Quiz App';
 
-    quizState!: QuizState;
+    // Subject selection properties
+    availableCategories = QUIZ_CATEGORIES;
+    selectedCategory: QuizCategory | null = null;
+
+    // Debug mode
+    private titleClickCount = 0;
+    private titleClickTimer: any;
+    goToQuestionNumber: number = 1;
+
+    // Theme
     isDarkTheme = false;
-    private destroy$ = new Subject<void>();
-    private debugClickCount = 0;
-    private debugClickTimer: any;
-    goToQuestionNumber: number = 1; // For direct question navigation
+
+    // Subscriptions
+    private quizSubscription?: Subscription;
+    private themeSubscription?: Subscription;
 
     constructor(
         private quizService: QuizService,
-        private textFormatter: TextFormatterService,
         private analytics: AnalyticsService,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private textFormatter: TextFormatterService
     ) {}
 
     ngOnInit(): void {
-        // Track device visit when app loads
-        this.analytics.trackDeviceVisit();
-
-        this.quizService.quizState$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(state => {
-                this.quizState = state;
-                // Update go-to input when question changes in debug mode
-                if (state.debugMode && state.currentView === 'quiz') {
-                    this.updateGoToQuestionNumber();
-                }
-            });
+        // Subscribe to quiz state
+        this.quizSubscription = this.quizService.quizState$.subscribe(state => {
+            // Update selected category from service
+            this.selectedCategory = state.selectedCategory || null;
+        });
 
         // Subscribe to theme changes
-        this.themeService.isDarkTheme$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(isDark => {
-                this.isDarkTheme = isDark;
-            });
-    }
+        this.themeSubscription = this.themeService.isDarkTheme$.subscribe(
+            isDark => this.isDarkTheme = isDark
+        );
 
-    // Add theme toggle method
-    toggleTheme(): void {
-        this.themeService.toggleTheme();
-    }
-
-    toggleDebugMode(): void {
-        this.quizService.toggleDebugMode();
-    }
-
-    goToQuestion(): void {
-        if (this.goToQuestionNumber && this.isDebugMode()) {
-            const success = this.quizService.goToQuestion(this.goToQuestionNumber);
-            if (!success) {
-                const maxQuestions = this.quizService.getTotalQuestions();
-                alert(`Invalid question number. Please enter a number between 1 and ${maxQuestions}.`);
-            }
-        }
-    }
-
-    onGoToQuestionKeyPress(event: KeyboardEvent): void {
-        if (event.key === 'Enter') {
-            this.goToQuestion();
-        }
-    }
-
-    updateGoToQuestionNumber(): void {
-        // Update the input field with current question number when switching to debug mode
-        if (this.isDebugMode()) {
-            this.goToQuestionNumber = this.quizService.getCurrentQuestionNumber();
-        }
-    }
-
-    getTotalQuestions(): number {
-        return this.quizService.getTotalQuestions();
-    }
-
-    // Debug mode activation - click title area 5 times quickly
-    onTitleClick(): void {
-        this.debugClickCount++;
-
-        if (this.debugClickTimer) {
-            clearTimeout(this.debugClickTimer);
-        }
-
-        this.debugClickTimer = setTimeout(() => {
-            this.debugClickCount = 0;
-        }, 2000); // Reset counter after 2 seconds
-
-        if (this.debugClickCount >= 5) {
-            this.quizService.toggleDebugMode();
-            this.debugClickCount = 0;
-            clearTimeout(this.debugClickTimer);
-        }
+        // Track device visit
+        this.analytics.trackDeviceVisit();
     }
 
     ngOnDestroy(): void {
-        if (this.debugClickTimer) {
-            clearTimeout(this.debugClickTimer);
-        }
-        this.destroy$.next();
-        this.destroy$.complete();
+        this.quizSubscription?.unsubscribe();
+        this.themeSubscription?.unsubscribe();
     }
 
-    // Quiz actions
+    // Subject Selection Methods
+    selectSubject(category: QuizCategory): void {
+        this.selectedCategory = category;
+        this.quizService.selectCategory(category);
+        console.log(`Selected subject: ${category.name}`);
+    }
+
+    clearSelection(): void {
+        this.selectedCategory = null;
+        this.quizService.clearCategorySelection();
+    }
+
+    getSubjectStats(categoryId: string): any {
+        return this.quizService.getCategoryStats(categoryId);
+    }
+
+    // Quiz Control Methods
     async startQuiz(): Promise<void> {
+        if (!this.selectedCategory) {
+            console.error('No subject selected');
+            alert('Please select a subject first!');
+            return;
+        }
+
         try {
             await this.quizService.startQuiz();
         } catch (error) {
-            alert(`Failed to load Excel file:\n\n${(error as Error).message}\n\nMake sure Questions.xlsx is in public/ folder and restart ng serve`);
+            console.error('Error starting quiz:', error);
+            alert('Error loading quiz questions. Please check that the data files are available and try again.');
         }
     }
 
@@ -151,9 +119,94 @@ export class AppComponent implements OnInit, OnDestroy {
 
     restartQuiz(): void {
         this.quizService.restartQuiz();
+        this.selectedCategory = null;
     }
 
-    // Formatting methods
+    // State Getters
+    get quizState() {
+        return this.quizService.currentState;
+    }
+
+    getCurrentQuestion(): Question | null {
+        return this.quizService.currentState.currentQuestion;
+    }
+
+    getProgress(): number {
+        return this.quizService.getProgress();
+    }
+
+    getScorePercentage(): number {
+        return this.quizService.getScorePercentage();
+    }
+
+    getScoreCircleStyle(): any {
+        const percentage = this.getScorePercentage();
+        let color = '#dc3545'; // Red for low scores
+
+        if (percentage >= 80) color = '#28a745'; // Green for high scores
+        else if (percentage >= 60) color = '#ffc107'; // Yellow for medium scores
+
+        return { 'background-color': color };
+    }
+
+    getPerformanceText(): string {
+        const percentage = this.getScorePercentage();
+        const categoryName = this.selectedCategory?.name || 'this subject';
+
+        if (percentage >= 90) return `Excellent work on ${categoryName}! You're a true expert! 🏆`;
+        if (percentage >= 80) return `Great job on ${categoryName}! You really know your stuff! 🎉`;
+        if (percentage >= 70) return `Good work on ${categoryName}! Keep studying to improve further. 👍`;
+        if (percentage >= 60) return `Not bad on ${categoryName}, but there's room for improvement. 📚`;
+        return `Keep studying ${categoryName} - practice makes perfect! 💪`;
+    }
+
+    // Answer Management
+    isAnswerSelected(answer: string): boolean {
+        return this.quizState.selectedAnswers.includes(answer);
+    }
+
+    getAnswerEntries(): Array<{key: string, value: string}> {
+        const question = this.getCurrentQuestion();
+        if (!question) return [];
+
+        return Object.entries(question.answers)
+            .filter(([key, value]) => value && value.trim() !== '')
+            .map(([key, value]) => ({ key, value }));
+    }
+
+    getAnswerButtonClass(answerKey: string): string {
+        const isSelected = this.isAnswerSelected(answerKey);
+        const hasAnswered = this.quizState.hasAnswered;
+        const isCorrect = this.isCorrectAnswer(answerKey);
+
+        if (!hasAnswered) {
+            return isSelected ? 'selected' : '';
+        }
+
+        // Show results after answering (unless in debug mode)
+        if (!this.isDebugMode()) {
+            if (isCorrect) return 'correct';
+            if (isSelected && !isCorrect) return 'incorrect';
+        }
+
+        return isSelected ? 'selected' : '';
+    }
+
+    isCorrectAnswer(answerKey: string): boolean {
+        const question = this.getCurrentQuestion();
+        return question ? question.correct.includes(answerKey) : false;
+    }
+
+    getCorrectAnswersText(): string {
+        const question = this.getCurrentQuestion();
+        if (!question) return '';
+
+        return question.correct
+            .map(key => `${key.toUpperCase()}) ${question.answers[key as keyof typeof question.answers]}`)
+            .join(', ');
+    }
+
+    // Text Formatting
     formatQuestionText(text: string): FormattedContent[] {
         return this.textFormatter.formatQuestionText(text);
     }
@@ -162,70 +215,105 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.textFormatter.formatAnswerText(key, text);
     }
 
-    // Utility methods
-    getCurrentQuestion(): Question {
-        return this.quizState.currentQuestion || {} as Question;
+    // Language Support for Code Highlighting
+    normalizeLanguage(language: string): string {
+        if (!language) return 'csharp';
+
+        const lang = language.toLowerCase().trim();
+
+        const languageMap: { [key: string]: string } = {
+            'c': 'c',
+            'c++': 'cpp',
+            'cpp': 'cpp',
+            'cxx': 'cpp',
+            'cc': 'cpp',
+            'c#': 'csharp',
+            'csharp': 'csharp',
+            'cs': 'csharp',
+            'java': 'java',
+            'javascript': 'javascript',
+            'js': 'javascript',
+            'typescript': 'typescript',
+            'ts': 'typescript',
+            'python': 'python',
+            'py': 'python',
+            'html': 'html',
+            'css': 'css',
+            'sql': 'sql',
+            'json': 'json',
+            'xml': 'xml',
+            'php': 'php',
+            'ruby': 'ruby',
+            'go': 'go',
+            'rust': 'rust',
+            'swift': 'swift',
+            'kotlin': 'kotlin',
+            'dart': 'dart'
+        };
+
+        return languageMap[lang] || lang || 'csharp';
     }
 
-    getAnswerEntries(): Array<{key: string, value: string}> {
-        const question = this.getCurrentQuestion();
-        const answerKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    getLanguageDisplayName(language: string): string {
+        if (!language) return 'CODE';
 
-        return answerKeys
-            .map(key => ({ key, value: (question.answers as any)?.[key] || '' }))
-            .filter(answer => answer.value && answer.value.trim() !== '');
+        const lang = language.toLowerCase().trim();
+
+        const displayNames: { [key: string]: string } = {
+            'c': 'C',
+            'c++': 'C++',
+            'cpp': 'C++',
+            'cxx': 'C++',
+            'cc': 'C++',
+            'c#': 'C#',
+            'csharp': 'C#',
+            'cs': 'C#',
+            'java': 'Java',
+            'javascript': 'JavaScript',
+            'js': 'JavaScript',
+            'typescript': 'TypeScript',
+            'ts': 'TypeScript',
+            'python': 'Python',
+            'py': 'Python',
+            'html': 'HTML',
+            'css': 'CSS',
+            'sql': 'SQL',
+            'json': 'JSON',
+            'xml': 'XML',
+            'php': 'PHP',
+            'ruby': 'Ruby',
+            'go': 'Go',
+            'rust': 'Rust',
+            'swift': 'Swift',
+            'kotlin': 'Kotlin',
+            'dart': 'Dart'
+        };
+
+        return displayNames[lang] || language.toUpperCase();
     }
 
-    getProgress(): number {
-        return this.quizService.getProgress();
-    }
+    // Debug Mode
+    onTitleClick(): void {
+        this.titleClickCount++;
 
-    isAnswerSelected(answer: string): boolean {
-        return this.quizState.selectedAnswers.includes(answer);
-    }
-
-    isCorrectAnswer(answer: string): boolean {
-        const question = this.getCurrentQuestion();
-        return question.correct && question.correct.includes(answer);
-    }
-
-    getCorrectAnswersText(): string {
-        const question = this.getCurrentQuestion();
-        return question.correct ? question.correct.map((ans: string) => ans.toUpperCase()).join(', ') : '';
-    }
-
-    getScorePercentage(): number {
-        return this.quizService.getScorePercentage();
-    }
-
-    getScoreCircleStyle(): { background: string } {
-        const percentage = this.getScorePercentage();
-        let background: string;
-
-        if (percentage >= 80) {
-            background = 'linear-gradient(135deg, #28a745, #20c997)';
-        } else if (percentage >= 60) {
-            background = 'linear-gradient(135deg, #ffc107, #fd7e14)';
-        } else {
-            background = 'linear-gradient(135deg, #dc3545, #e83e8c)';
+        if (this.titleClickTimer) {
+            clearTimeout(this.titleClickTimer);
         }
 
-        return { background };
-    }
+        this.titleClickTimer = setTimeout(() => {
+            this.titleClickCount = 0;
+        }, 2000);
 
-    getPerformanceText(): string {
-        const percentage = this.getScorePercentage();
-
-        if (percentage >= 80) {
-            return 'Excellent work! 🌟';
-        } else if (percentage >= 60) {
-            return 'Good job! 👍';
-        } else {
-            return 'Keep practicing! 💪';
+        if (this.titleClickCount >= 5) {
+            this.toggleDebugMode();
+            this.titleClickCount = 0;
         }
     }
 
-    // Debug mode methods
+    toggleDebugMode(): void {
+        this.quizService.toggleDebugMode();
+    }
+
     isDebugMode(): boolean {
         return this.quizService.isDebugMode();
     }
@@ -234,28 +322,55 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.quizService.getDebugInfo();
     }
 
-    // Helper method to get answer button classes
-    getAnswerButtonClass(answer: string): string {
-        const baseClass = 'answer-option';
-        const isSelected = this.isAnswerSelected(answer);
-        const isCorrect = this.isCorrectAnswer(answer);
-        const hasAnswered = this.quizState.hasAnswered;
-        const isDebug = this.isDebugMode();
+    getTotalQuestions(): number {
+        return this.quizService.getTotalQuestions();
+    }
 
-        let classes = [baseClass];
-
-        if (isDebug && isCorrect) {
-            classes.push('debug-correct');
-        } else if (hasAnswered) {
-            if (isCorrect) {
-                classes.push('correct');
-            } else if (isSelected) {
-                classes.push('incorrect');
+    goToQuestion(): void {
+        if (this.goToQuestionNumber && this.goToQuestionNumber > 0) {
+            const success = this.quizService.goToQuestion(this.goToQuestionNumber);
+            if (!success) {
+                alert(`Invalid question number. Please enter a number between 1 and ${this.getTotalQuestions()}`);
             }
-        } else if (isSelected) {
-            classes.push('selected');
         }
+    }
 
-        return classes.join(' ');
+    onGoToQuestionKeyPress(event: KeyboardEvent): void {
+        if (event.key === 'Enter') {
+            this.goToQuestion();
+        }
+    }
+
+    // Theme
+    toggleTheme(): void {
+        this.themeService.toggleTheme();
+    }
+
+    onImageLoad(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        console.log(`Image loaded successfully: ${img.src}`);
+        img.style.opacity = '1';
+    }
+
+    onImageError(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        console.error(`Failed to load image: ${img.src}`);
+
+        // Replace with error message
+        const container = img.parentElement;
+        if (container) {
+            container.innerHTML = `
+                <div class="image-error">
+                    📷 Image could not be loaded
+                    <br><small>File: ${img.src.split('/').pop()}</small>
+                </div>
+            `;
+        }
+    }
+
+    // Check if current question has an image (ADD THIS)
+    hasQuestionImage(): boolean {
+        const question = this.getCurrentQuestion();
+        return !!(question?.resource && question.resource.trim());
     }
 }

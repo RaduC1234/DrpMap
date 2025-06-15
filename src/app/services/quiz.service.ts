@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Question, QuizState } from '../models/quiz.models';
+import { QuizCategory } from '../quiz-configuration'; // Import the interface
 import { ExcelLoaderService } from './excel-loader.service';
 import { AnalyticsService } from './analytics.service';
+
+// Extended QuizState interface to include category info
+interface ExtendedQuizState extends QuizState {
+    selectedCategory?: QuizCategory;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +18,7 @@ export class QuizService {
     private quizStartTime: number = 0;
     private questionStartTime: number = 0;
 
-    private quizStateSubject = new BehaviorSubject<QuizState>({
+    private quizStateSubject = new BehaviorSubject<ExtendedQuizState>({
         currentView: 'start',
         allQuestions: [],
         currentQuestion: null,
@@ -23,27 +29,48 @@ export class QuizService {
         hasAnswered: false,
         lastAnswerCorrect: false,
         debugMode: false,
-        currentQuestionIndex: 0
+        currentQuestionIndex: 0,
+        selectedCategory: undefined
     });
 
-    public quizState$: Observable<QuizState> = this.quizStateSubject.asObservable();
+    public quizState$: Observable<ExtendedQuizState> = this.quizStateSubject.asObservable();
 
     constructor(
         private excelLoader: ExcelLoaderService,
         private analytics: AnalyticsService
     ) {}
 
-    get currentState(): QuizState {
+    get currentState(): ExtendedQuizState {
         return this.quizStateSubject.value;
     }
 
+    // NEW: Method to select a quiz category
+    selectCategory(category: QuizCategory): void {
+        this.updateState({ selectedCategory: category });
+        console.log(`Selected category: ${category.name}`);
+    }
+
+    // NEW: Method to clear category selection
+    clearCategorySelection(): void {
+        this.updateState({ selectedCategory: undefined });
+        console.log('Category selection cleared');
+    }
+
+    // MODIFIED: Updated to work with selected category
     async startQuiz(): Promise<void> {
+        const selectedCategory = this.currentState.selectedCategory;
+
+        if (!selectedCategory) {
+            throw new Error('No category selected. Please select a quiz category first.');
+        }
+
         this.updateState({ currentView: 'loading' });
 
         try {
-            const questions = await this.excelLoader.loadQuestions();
+            console.log(`Loading questions for ${selectedCategory.name}...`);
+            const questions = await this.excelLoader.loadQuestionsForCategory(selectedCategory);
 
-            const newState: Partial<QuizState> = {
+            const newState: Partial<ExtendedQuizState> = {
                 allQuestions: questions,
                 usedQuestionIds: new Set(),
                 score: 0,
@@ -62,9 +89,10 @@ export class QuizService {
 
             this.resetQuestion();
 
-            // Track quiz start
+            // Track quiz start with category info
             this.quizStartTime = Date.now();
             this.analytics.trackQuizStart();
+            console.log(`Started ${selectedCategory.name} quiz with ${questions.length} questions`);
 
         } catch (error) {
             console.error('Quiz loading failed:', error);
@@ -244,7 +272,7 @@ export class QuizService {
             state.currentQuestion!.correct.sort()
         );
 
-        const updates: Partial<QuizState> = {
+        const updates: Partial<ExtendedQuizState> = {
             hasAnswered: true,
             questionsAnswered: state.questionsAnswered + 1,
             lastAnswerCorrect: isCorrect,
@@ -253,13 +281,16 @@ export class QuizService {
 
         this.updateState(updates);
 
-        // Track question answered
+        // Track question answered with category info
         const timeSpent = (Date.now() - this.questionStartTime) / 1000;
         this.analytics.trackQuestionAnswered(
             state.currentQuestion!.id,
             isCorrect,
             timeSpent
         );
+
+        // Save stats for the current category
+        this.saveQuestionResult(isCorrect, timeSpent);
 
         if (state.questionsAnswered + 1 >= this.MAX_QUESTIONS) {
             if (state.currentQuestion) {
@@ -339,8 +370,14 @@ export class QuizService {
         }
     }
 
+    // MODIFIED: Updated to save category-specific stats and clear selection
     restartQuiz(): void {
         const state = this.currentState;
+
+        // Save final quiz stats for the category
+        if (state.selectedCategory) {
+            this.saveFinalQuizStats();
+        }
 
         // Track abandonment if quiz was not completed
         if (state.currentView === 'quiz' && state.questionsAnswered < this.MAX_QUESTIONS) {
@@ -357,7 +394,8 @@ export class QuizService {
             selectedAnswers: [],
             hasAnswered: false,
             lastAnswerCorrect: false,
-            currentQuestionIndex: 0
+            currentQuestionIndex: 0,
+            selectedCategory: undefined // Clear category selection
             // Keep debugMode state when restarting
         });
     }
@@ -381,9 +419,12 @@ export class QuizService {
             state.questionsAnswered,
             timeSpent
         );
+
+        // Save final stats for the category
+        this.saveFinalQuizStats();
     }
 
-    private updateState(updates: Partial<QuizState>): void {
+    private updateState(updates: Partial<ExtendedQuizState>): void {
         const currentState = this.currentState;
         const newState = { ...currentState, ...updates };
         this.quizStateSubject.next(newState);
@@ -391,6 +432,56 @@ export class QuizService {
 
     private arraysEqual(a: string[], b: string[]): boolean {
         return a.length === b.length && a.every(val => b.includes(val));
+    }
+
+    // NEW: Save question result for category stats
+    private saveQuestionResult(isCorrect: boolean, timeSpent: number): void {
+        const state = this.currentState;
+        if (!state.selectedCategory) return;
+
+        const categoryId = state.selectedCategory.id;
+        const stats = this.getCategoryStats(categoryId) || {};
+
+        // Update stats
+        stats.totalAttempts = (stats.totalAttempts || 0) + 1;
+        stats.totalCorrect = (stats.totalCorrect || 0) + (isCorrect ? 1 : 0);
+        stats.totalTimeSpent = (stats.totalTimeSpent || 0) + timeSpent;
+        stats.lastActivity = new Date().toISOString();
+
+        this.saveCategoryStats(categoryId, stats);
+    }
+
+    // NEW: Save final quiz statistics
+    private saveFinalQuizStats(): void {
+        const state = this.currentState;
+        if (!state.selectedCategory) return;
+
+        const categoryId = state.selectedCategory.id;
+        const stats = this.getCategoryStats(categoryId) || {};
+
+        const percentage = state.questionsAnswered > 0 ?
+            Math.round((state.score / state.questionsAnswered) * 100) : 0;
+
+        // Update quiz-level stats
+        stats.totalQuizzes = (stats.totalQuizzes || 0) + 1;
+        stats.lastScore = percentage;
+        stats.bestScore = Math.max(stats.bestScore || 0, percentage);
+        stats.totalQuestions = state.allQuestions.length;
+        stats.lastCompleted = new Date().toISOString();
+
+        this.saveCategoryStats(categoryId, stats);
+        console.log(`Saved final stats for ${state.selectedCategory.name}:`, stats);
+    }
+
+    // NEW: Get category statistics
+    getCategoryStats(categoryId: string): any {
+        const stats = localStorage.getItem(`quiz-stats-${categoryId}`);
+        return stats ? JSON.parse(stats) : null;
+    }
+
+    // NEW: Save category statistics
+    private saveCategoryStats(categoryId: string, stats: any): void {
+        localStorage.setItem(`quiz-stats-${categoryId}`, JSON.stringify(stats));
     }
 
     // Utility methods for components
@@ -416,7 +507,8 @@ export class QuizService {
         const state = this.currentState;
         if (!state.debugMode || !state.currentQuestion) return '';
 
-        return `Question ${(state.currentQuestionIndex || 0) + 1} of ${state.allQuestions.length} | ID: ${state.currentQuestion.id} | Correct: ${state.currentQuestion.correct.join(', ')}`;
+        const categoryInfo = state.selectedCategory ? ` | ${state.selectedCategory.name}` : '';
+        return `Question ${(state.currentQuestionIndex || 0) + 1} of ${state.allQuestions.length} | ID: ${state.currentQuestion.id} | Correct: ${state.currentQuestion.correct.join(', ')}${categoryInfo}`;
     }
 
     getTotalQuestions(): number {
@@ -425,5 +517,10 @@ export class QuizService {
 
     getCurrentQuestionNumber(): number {
         return (this.currentState.currentQuestionIndex || 0) + 1;
+    }
+
+    // NEW: Get current selected category
+    getSelectedCategory(): QuizCategory | undefined {
+        return this.currentState.selectedCategory;
     }
 }

@@ -4,6 +4,10 @@
 @import "app/styles/app.code-formater.css";
 @import "app/styles/app.dark-theme.css";
 @import "app/styles/app.debug.css";
+@import "app/styles/app.category.css";
+@import "app/styles/app.images.css";
+
+
 * {
     margin: 0;
     padding: 0;

@@ -1,4 +1,4 @@
-<!-- Fixed HTML template to match the original working design with debug mode -->
+<!-- Complete HTML template with safe navigation operators -->
 <div class="container">
     <!-- Header with blue gradient -->
     <div class="header">
@@ -44,23 +44,47 @@
         </div>
     </div>
 
-    <!-- Start Screen -->
+    <!-- Start Screen with Subject Selection -->
     <div class="start-screen" *ngIf="quizState.currentView === 'start'">
         <div class="start-content">
             <div class="start-icon">🚀</div>
             <h2>Welcome to the Quiz App</h2>
-            <p>Test your knowledge with randomized questions!</p>
+            <p>Choose your subject and test your knowledge!</p>
+
             <div *ngIf="isDebugMode()" class="debug-notice">
                 🐛 Debug mode is active - questions will be shown in order with correct answers highlighted
             </div>
-            <button class="btn btn-start" (click)="startQuiz()">🚀 Start Quiz</button>
+
+            <!-- Simple Subject Selection (shown when no subject is selected) -->
+            <div class="subject-selection" *ngIf="!selectedCategory">
+                <div class="simple-subject-buttons">
+                    <button class="btn btn-subject-simple"
+                            *ngFor="let category of availableCategories"
+                            (click)="selectSubject(category)"
+                            [style.background]="category.color">
+                        {{ category.icon }} {{ category.name }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selected Subject Display -->
+            <div class="selected-subject" *ngIf="selectedCategory">
+                <div class="selected-info">
+                    <span class="selected-icon">{{ selectedCategory!.icon }}</span>
+                    <span class="selected-text">{{ selectedCategory!.name }} Selected</span>
+                    <button class="btn btn-change" (click)="clearSelection()">Change</button>
+                </div>
+                <button class="btn btn-start" (click)="startQuiz()">
+                    🚀 Start {{ selectedCategory!.name }} Quiz
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Loading Screen -->
     <div class="loading" *ngIf="quizState.currentView === 'loading'">
         <div class="spinner"></div>
-        <p>Loading questions...</p>
+        <p>Loading {{ selectedCategory?.name || 'quiz' }} questions...</p>
     </div>
 
     <!-- Quiz Screen -->
@@ -84,18 +108,18 @@
                 Score: {{quizState.score}}/{{quizState.questionsAnswered}}
             </div>
             <div class="debug-display" *ngIf="isDebugMode()">
-                🐛 DEBUG - ID: {{getCurrentQuestion().id}}
+                🐛 DEBUG - ID: {{getCurrentQuestion()?.id}} | Subject: {{ selectedCategory?.name }}
             </div>
         </div>
 
         <!-- Question Card -->
         <div class="question-card" *ngIf="quizState.currentQuestion">
             <div class="question-text">
-                <ng-container *ngFor="let part of formatQuestionText(getCurrentQuestion().question)">
+                <ng-container *ngFor="let part of formatQuestionText(getCurrentQuestion()?.question || '')">
                     <div *ngIf="part.type === 'text'" [innerHTML]="part.content" class="text-content"></div>
                     <div *ngIf="part.type === 'code'" class="code-block">
-                        <div class="code-header">{{ part.language?.toUpperCase() || 'CODE' }}</div>
-                        <pre><code [highlight]="part.content" [language]="part.language || 'csharp'"></code></pre>
+                        <div class="code-header">{{ getLanguageDisplayName(part.language || '') }}</div>
+                        <pre><code [highlight]="part.content" [language]="normalizeLanguage(part.language || 'csharp')"></code></pre>
                     </div>
                 </ng-container>
             </div>
@@ -103,6 +127,15 @@
             <!-- Debug info for correct answers -->
             <div *ngIf="isDebugMode()" class="debug-correct-answers">
                 ✅ Correct Answer(s): {{getCorrectAnswersText()}}
+            </div>
+
+            <!-- Resource Image (if exists) -->
+            <div *ngIf="getCurrentQuestion()?.resource" class="question-image">
+                <img [src]="getCurrentQuestion()?.resource"
+                     [alt]="'Question ' + getCurrentQuestion()?.id + ' image'"
+                     (load)="onImageLoad($event)"
+                     (error)="onImageError($event)"
+                     class="resource-image">
             </div>
 
             <!-- Answers -->
@@ -184,7 +217,10 @@
     <!-- Results Screen -->
     <div class="final-results" *ngIf="quizState.currentView === 'results'">
         <h2>🎉 Quiz Completed!</h2>
-        <div class="score-circle" [ngStyle]="getScoreCircleStyle()">
+        <div class="subject-badge" *ngIf="selectedCategory" [style.background-color]="selectedCategory.color">
+            {{ selectedCategory.icon }} {{ selectedCategory.name }}
+        </div>
+        <div class="score-circle" [style.background-color]="getScoreCircleStyle()['background-color']">
             <span class="score-percentage">{{getScorePercentage()}}%</span>
         </div>
         <h3>You scored {{quizState.score}} out of {{quizState.questionsAnswered}}</h3>
@@ -193,11 +229,12 @@
         <div class="stats">
             📊 Questions answered: {{quizState.questionsAnswered}} out of 37<br>
             📚 Questions available in database: {{quizState.allQuestions.length}}<br>
-            🎯 Accuracy: {{getScorePercentage()}}%
+            🎯 Accuracy: {{getScorePercentage()}}%<br>
+            📖 Subject: {{ selectedCategory?.name }}
         </div>
 
         <button class="btn btn-start" (click)="restartQuiz()">
-            🔄 Take Another Quiz
+            🔄 Choose Another Subject
         </button>
     </div>
 </div>
